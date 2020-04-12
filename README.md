@@ -26,6 +26,13 @@ frontend will refresh itself every 5 min.
 clear db & images is a process that will clear db&files older then 4 hours
 the process will run once in an hour
 
+## group prefix
+
+the rooms will be combined into groups by the rooms prefix. PT 1 & PT 2 will combine in to PT group tab.
+the group prefix can be found in server/cfg.json file. please edit this file for extra groups.
+the prefix is the first word till the space.
+if the prefix was not found, a new tab will be open.
+
 ## db
 
 atlas mongo db sandbox (free)
