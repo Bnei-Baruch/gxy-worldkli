@@ -10,9 +10,9 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  debpoy:
 
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     strategy:
       matrix:
@@ -26,23 +26,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm install
     - run: npm run build 
-    - name: Push to GitHub Packages
-      env:
-        CI: true
-      uses: docker/build-push-action@v1
-      with:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-        registry: docker.pkg.github.com
-        repository: bnei-baruch/gxy-worldkli/gxy-worldkli
-        tag_with_ref: true
-  deploy:
-    needs: build
-    runs-on: self-hosted
-    steps:
-    - run: docker login docker.pkg.github.com -u ${{ github.actor  }} -p ${{ secrets.GITHUB_TOKEN  }}
-    - run: docker rm -f worldkli | true
-    - run: docker rmi docker.pkg.github.com/bnei-baruch/gxy-worldkli/gxy-worldkli:latest | true
-    - run: docker run -d -p 2200:2200 --name worldkli docker.pkg.github.com/bnei-baruch/gxy-worldkli/gxy-worldkli:latest
+    - run: docker rm -f gxy-worldkli | true
+    - run: docker run -d -p 2200:2200 --name worldkli gxy-worldkli
 
 
