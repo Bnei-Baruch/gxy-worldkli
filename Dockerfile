@@ -8,8 +8,7 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package*.json ./
 RUN npm cache verify
-RUN npm install --only=production
-
+COPY node_modules ./node_modules
 ENV NODE_ENV production
 ENV PORT 2200
 
