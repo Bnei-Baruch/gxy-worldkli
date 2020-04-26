@@ -36,4 +36,17 @@ jobs:
         registry: docker.pkg.github.com
         repository: bnei-baruch/gxy-worldkli/gxy-worldkli
         tag_with_ref: true
-      
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+    - uses: azure/docker-login@v1
+      with:
+        login-server: docker.pkg.github.com
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - run: docker rm -f worldkli | true
+    - run: docker rmi docker.pkg.github.com/bnei-baruch/gxy-worldkli/gxy-worldkli:latest | true
+    - run: docker run -d -p 2200:2200 --name worldkli docker.pkg.github.com/bnei-baruch/gxy-worldkli/gxy-worldkli:latest
+
+
