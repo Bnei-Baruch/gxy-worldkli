@@ -50,7 +50,9 @@ router.post('/getBB', async (request, response) => {
         const now = new Date().getTime();
 
         if (!selectedGroup) {
+            console.log('!selectedGroup');
             const _users = await db.getWithLimit({ collection: 'users', query: {}, limit: 1 });
+            console.log('_users', _users, _users.length);
             if (!_users.length) {
                 response.json({ groups: [], usersInGroup: [], selectedGroup: '', timestamp: now });
                 return false;
