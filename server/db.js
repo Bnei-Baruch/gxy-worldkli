@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
-const connectionString = 'mongodb://getBBGalaxyDB:miravoyakli@getbbgalaxy-shard-00-00-jcvi4.mongodb.net:27017,getbbgalaxy-shard-00-01-jcvi4.mongodb.net:27017,getbbgalaxy-shard-00-02-jcvi4.mongodb.net:27017/test?ssl=true&replicaSet=GetBBGalaxy-shard-0&authSource=admin&retryWrites=true&w=majority'
+// const connectionString = 'mongodb://getBBGalaxyDB:miravoyakli@getbbgalaxy-shard-00-00-jcvi4.mongodb.net:27017,getbbgalaxy-shard-00-01-jcvi4.mongodb.net:27017,getbbgalaxy-shard-00-02-jcvi4.mongodb.net:27017/test?ssl=true&replicaSet=GetBBGalaxy-shard-0&authSource=admin&retryWrites=true&w=majority'
+const connectionString = 'mongodb://127.0.0.1:27017'
 
 const connect = async () => {
     try {
