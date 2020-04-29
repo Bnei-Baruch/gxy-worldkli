@@ -12,8 +12,6 @@ const connect = async () => {
     }
 };
 
-connect();
-
 mongoose.Promise = global.Promise;
 
 const UserModel = mongoose.model('User', {
@@ -117,4 +115,5 @@ module.exports = {
     createMany,
     getWithLimit,
     distinct,
+    connect
 }

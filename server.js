@@ -16,8 +16,7 @@ app.use(express.static(path.resolve('build')));
 app.use('/public', express.static(path.resolve('public')));
 
 require('./server/use').use(app);
-
-app.listen(port);
+require('./server/db').connect().then(()=>app.listen(port, ()=>console.log('server up')))
 
 setInterval(()=>clearDB(), (1000*60*60)); // clear db one in an hour
 
