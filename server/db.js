@@ -2,14 +2,16 @@ const mongoose = require('mongoose');
 
 const connectionString = 'mongodb://getBBGalaxyDB:miravoyakli@getbbgalaxy-shard-00-00-jcvi4.mongodb.net:27017,getbbgalaxy-shard-00-01-jcvi4.mongodb.net:27017,getbbgalaxy-shard-00-02-jcvi4.mongodb.net:27017/test?ssl=true&replicaSet=GetBBGalaxy-shard-0&authSource=admin&retryWrites=true&w=majority'
 
-    (async () => {
-        try {
-            await mongoose.connect(connectionString, { useMongoClient: true });
-            console.log('mongo db connection [success]');
-        } catch (err) {
-            console.log('mongo db connection [error]: ' + err)
-        }
-    })()
+const connect = async () => {
+    try {
+        await mongoose.connect(connectionString, { useMongoClient: true });
+        console.log('mongo db connection [success]');
+    } catch (err) {
+        console.log('mongo db connection [error]: ' + err)
+    }
+};
+
+connect();
 
 mongoose.Promise = global.Promise;
 
