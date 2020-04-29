@@ -2,11 +2,16 @@ const mongoose = require('mongoose');
 
 const connectionString = 'mongodb://getBBGalaxyDB:miravoyakli@getbbgalaxy-shard-00-00-jcvi4.mongodb.net:27017,getbbgalaxy-shard-00-01-jcvi4.mongodb.net:27017,getbbgalaxy-shard-00-02-jcvi4.mongodb.net:27017/test?ssl=true&replicaSet=GetBBGalaxy-shard-0&authSource=admin&retryWrites=true&w=majority'
 
-mongoose.connect(connectionString, { useMongoClient: true }, async () => {
-    console.log('mongo db connection [success]');
-});
+    (async () => {
+        try {
+            await mongoose.connect(connectionString, { useMongoClient: true });
+            console.log('mongo db connection [success]');
+        } catch (err) {
+            console.log('mongo db connection [error]: ' + err)
+        }
+    })()
+
 mongoose.Promise = global.Promise;
-const utils = require('./utils');
 
 const UserModel = mongoose.model('User', {
     userName: String,
@@ -14,7 +19,7 @@ const UserModel = mongoose.model('User', {
     roomName: String,
     roomId: String,
     timestamp: Number,
-    status: {type: Boolean, default: true},
+    status: { type: Boolean, default: true },
     groupName: String
 });
 
@@ -62,7 +67,7 @@ let get = cfg => {
 
 // cfg: {collection, query}
 let getWithLimit = cfg => {
-    // console.log('****** get', cfg)
+    console.log('****** getWithLimit', cfg)
     return new Promise((resolve, reject) => {
         collectionMap[cfg.collection].find(cfg.query).limit(cfg.limit).then(data => {
             resolve(data);
@@ -92,11 +97,11 @@ const createMany = async ({ docs, collection }) => {
     }
 }
 
-const distinct = async ({collection, fieldName, query}) => {
+const distinct = async ({ collection, fieldName, query }) => {
     try {
-        const vals = await collectionMap[collection].find({...query}).distinct(fieldName);
+        const vals = await collectionMap[collection].find({ ...query }).distinct(fieldName);
         return vals;
-    } catch(err) {
+    } catch (err) {
         throw err;
     }
 }
