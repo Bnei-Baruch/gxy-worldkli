@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const connectionString = 'mongodb://questionnaire:Shamati12@mongodb_mongo_1:27017/questionnaire'
-
 // const connectionString = 'mongodb://localhost:27017/getBB';
 
 const connect = async () => {
@@ -92,6 +91,17 @@ let create = cfg => {
     });
 }
 
+const findOneAndUpdate = async cfg => {
+    try {
+        await collectionMap[cfg.collection].findOneAndUpdate(cfg.query, cfg.data, {
+            new: true,
+            upsert: true // Make this update into an upsert
+        });
+    } catch (err) {
+        throw { status: 405, data: { msg: 'DB create err', err: err } };
+    }
+}
+
 const createMany = async ({ docs, collection }) => {
     try {
         await collectionMap[collection].insertMany(docs);
@@ -102,7 +112,7 @@ const createMany = async ({ docs, collection }) => {
 
 const distinct = async ({ collection, fieldName, query }) => {
     try {
-        const vals = await collectionMap[collection].find({ ...query }).distinct(fieldName);
+        const vals = await collectionMap[collection].find(query).distinct(fieldName);
         return vals;
     } catch (err) {
         throw err;
@@ -117,5 +127,6 @@ module.exports = {
     createMany,
     getWithLimit,
     distinct,
-    connect
+    connect,
+    findOneAndUpdate
 }

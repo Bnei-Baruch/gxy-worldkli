@@ -22,7 +22,12 @@ router.post('/userEnter', async (request, response) => {
         let groupName = body.roomName.split(' ')[0];
         if (!cfg.groupPrefix.includes(groupName)) groupName = body.roomName;
 
-        await db.create({ collection: 'users', data: { ...body, groupName, timestamp: new Date().getTime() } });
+        await db.findOneAndUpdate({ 
+            collection: 'users', 
+            data: { ...body, groupName, timestamp: new Date().getTime(), status: true },
+            query: {userId: body.userId}
+        });
+        
         console.log(`${body.userName} enter | ${body.userId}.jpg`)
         response.json();
     } catch (err) {
@@ -71,7 +76,7 @@ router.post('/getBB', async (request, response) => {
             selectedGroup = _users[0].groupName;
         }
 
-        const groups = await db.distinct({ collection: 'users', query: { status: true }, fieldName: 'groupName' });
+        const groups = await db.distinct({ collection: 'users', query: { 'status': true }, fieldName: 'groupName' });
         console.log('groupsInDB', groups);
 
         const _usersInGroup = await db.get({ collection: 'users', query: { groupName: selectedGroup, timestamp: { $gt: timestamp } } });
