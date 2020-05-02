@@ -18,14 +18,9 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(express.static(path.resolve('build')));
 app.use('/public', express.static(path.resolve('public')));
+app.use('/images', express.static(path.resolve('images')));
 
 require('./server/use').use(app);
 require('./server/db').connect().then(()=>app.listen(port, ()=>console.log('server up')))
 
 setInterval(()=>clearDB(), (1000*60*60)); // clear db one in an hour
-
-
-if (!fs.existsSync('./public/users')){
-    fs.mkdirSync('./public/users');
-    console.log('public/users folder successfully created');
-}

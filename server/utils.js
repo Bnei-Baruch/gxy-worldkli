@@ -56,10 +56,10 @@ const clearDB = async () => {
         const eraseTill = now - (1000 * 60 * 60 * 4); // 4 hours
         const users = await db.get({ collection: 'users', query: { timestamp: { $lt: eraseTill } } });
         const filesToDelete = users.map(u => `${u.userId}.jpg`);
-        const filesInDir = fs.readdirSync('./public/users/');
+        const filesInDir = fs.readdirSync('./images/');
         const approvedFilesToDelete = filesToDelete.filter(f => !!filesInDir.includes(f));
 
-        for (const idx in approvedFilesToDelete) fs.unlinkSync(`./public/users/${approvedFilesToDelete[idx]}`);
+        for (const idx in approvedFilesToDelete) fs.unlinkSync(`./images/${approvedFilesToDelete[idx]}`);
         await db.remove({collection: 'users', query: { timestamp: { $lt: eraseTill }}});
         console.log(`clear db ${approvedFilesToDelete.length} files removed`);
         console.log(`clear db ${users.length} users removed`);

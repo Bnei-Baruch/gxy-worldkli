@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require('./db');
 const cfg = require('./cfg.json');
 const fs = require('fs');
+const fsExtra = require('fs-extra')
 
 router.post('/userEnter', async (request, response) => {
     try {
@@ -14,7 +15,7 @@ router.post('/userEnter', async (request, response) => {
         if (!body.image) throw { status: 400, data: { msg: 'image was not found' } };
 
 
-        fs.writeFileSync(`./public/users/${body.userId}.jpg`, body.image.replace(/^data:image\/png;base64,/, ""), 'base64');
+        fs.writeFileSync(`./images/${body.userId}.jpg`, body.image.replace(/^data:image\/png;base64,/, ""), 'base64');
 
         delete body.image;
 
@@ -34,8 +35,18 @@ router.post('/userLeave', async (request, response) => {
         const { body } = request;
         if (!body.userId) throw { status: 400, data: { msg: 'userId was not found' } };
         const timestamp = new Date().getTime();
-        await db.edit({ collection: 'users', query: { userId: body.userId }, data: {status: false, timestamp} });
+        await db.edit({ collection: 'users', query: { userId: body.userId }, data: { status: false, timestamp } });
         console.log(`${body.userId} left`);
+        response.json();
+    } catch (err) {
+        response.status(err.status).json(err.data || { msg: 'enter user error', err });
+    }
+});
+
+router.post('/delete', async (request, response) => {
+    try {
+        await db.remove({collection: 'users', query: {}});
+        fsExtra.emptyDirSync('./images');
         response.json();
     } catch (err) {
         response.status(err.status).json(err.data || { msg: 'enter user error', err });
@@ -60,12 +71,12 @@ router.post('/getBB', async (request, response) => {
             selectedGroup = _users[0].groupName;
         }
 
-        const groups = await db.distinct({ collection: 'users', query:{status: true}, fieldName: 'groupName' });
+        const groups = await db.distinct({ collection: 'users', query: { status: true }, fieldName: 'groupName' });
         console.log('groupsInDB', groups);
 
         const _usersInGroup = await db.get({ collection: 'users', query: { groupName: selectedGroup, timestamp: { $gt: timestamp } } });
 
-        const usersInGroup = _usersInGroup.map(u => ({...u._doc, image: `public/users/${u.userId}.jpg`}))
+        const usersInGroup = _usersInGroup.map(u => ({ ...u._doc, image: `images/${u.userId}.jpg` }))
         response.json({
             timestamp: now,
             selectedGroup: selectedGroup,

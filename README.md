@@ -53,7 +53,7 @@ payload:
 all fields are mandatory - invalid will return 400
 on valid - 200
 
-the image will be saved as a .jpg file in public/users folder
+the image will be saved as a .jpg file in public/users folder - aka image folder in the docker
 
 ### /api/userLeave - POST
 
