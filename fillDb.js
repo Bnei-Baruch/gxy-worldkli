@@ -16,8 +16,11 @@ const images = [
 
 const sleep = m => new Promise(r => setTimeout(r, m))
 
+// const host = 'http://localhost:2200';
+const host = 'https://groups.kli.one';
+
 const init = async ()=>{
-    for (let i=1; i<10;i++){
+    for (let i=1; i<2;i++){
 
         const groupName = groups[Math.floor(Math.random() * groups.length)];
         const groupSufix = groupsSufix[Math.floor(Math.random() * groupsSufix.length)];
@@ -26,7 +29,7 @@ const init = async ()=>{
         const roomId = md5(roomName);
 
         await api({
-            url: 'http://localhost:2200/api/userEnter',
+            url: host + '/api/userEnter',
             method: 'post', 
             data: {
                 userName: `User ${i}`,

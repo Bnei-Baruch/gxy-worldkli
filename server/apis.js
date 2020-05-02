@@ -25,7 +25,7 @@ router.post('/userEnter', async (request, response) => {
         console.log(`${body.userName} enter | ${body.userId}.jpg`)
         response.json();
     } catch (err) {
-        response.status(err.status).json(err.data || { msg: 'enter user error', err });
+        response.status(err.status || 400).json(err.data || { msg: 'enter user error', err });
     }
 });
 
