@@ -6,6 +6,8 @@ const path = require('path');
 const morgan = require('morgan');
 const app = express();
 const port = process.env.PORT || 2200;
+const fs = require('fs');
+
 const clearDB = require('./server/utils').clearDB;
 app.use(morgan('dev'));
 
@@ -20,3 +22,8 @@ require('./server/db').connect().then(()=>app.listen(port, ()=>console.log('serv
 
 setInterval(()=>clearDB(), (1000*60*60)); // clear db one in an hour
 
+
+if (!fs.existsSync('./public/users')){
+    fs.mkdirSync('./public/users');
+    console.log('public/users folder successfully created');
+}
