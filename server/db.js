@@ -25,6 +25,7 @@ const UserModel = mongoose.model('User', {
     groupName: String
 });
 
+
 const collectionMap = {
     users: UserModel,
 }
