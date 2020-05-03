@@ -21,7 +21,7 @@ router.post('/userEnter', async (request, response) => {
 
         let groupName = body.roomName;
         cfg.groupPrefix.forEach(prefix => {
-            if (body.roomName.includes(prefix)) groupName=prefix;
+            if (body.roomName.indexOf(prefix) == 0) groupName=prefix;
         })
 
         await db.findOneAndUpdate({ 
