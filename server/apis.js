@@ -19,8 +19,10 @@ router.post('/userEnter', async (request, response) => {
 
         delete body.image;
 
-        let groupName = body.roomName.split(' ')[0];
-        if (!cfg.groupPrefix.includes(groupName)) groupName = body.roomName;
+        let groupName = body.roomName;
+        cfg.groupPrefix.forEach(prefix => {
+            if (body.roomName.includes(prefix)) groupName=prefix;
+        })
 
         await db.findOneAndUpdate({ 
             collection: 'users', 

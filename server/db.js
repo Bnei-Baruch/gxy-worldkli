@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const fs = require('fs');
 const connectionString = 'mongodb://questionnaire:Shamati12@mongodb_mongo_1:27017/questionnaire'
 // const connectionString = 'mongodb://localhost:27017/getBB';
 
@@ -114,6 +114,7 @@ const connect = async () => {
     try {
         await mongoose.connect(connectionString, { useMongoClient: true });
         await remove({collection: 'users', query: {}});
+        if (!fs.existsSync('./images')) fs.mkdirSync('./images');
         console.log('mongo db connection [success]');
     } catch (err) {
         console.log('mongo db connection [error]: ' + err)
