@@ -3,15 +3,6 @@ const mongoose = require('mongoose');
 const connectionString = 'mongodb://questionnaire:Shamati12@mongodb_mongo_1:27017/questionnaire'
 // const connectionString = 'mongodb://localhost:27017/getBB';
 
-const connect = async () => {
-    try {
-        await mongoose.connect(connectionString, { useMongoClient: true });
-        console.log('mongo db connection [success]');
-    } catch (err) {
-        console.log('mongo db connection [error]: ' + err)
-    }
-};
-
 mongoose.Promise = global.Promise;
 
 const UserModel = mongoose.model('User', {
@@ -118,6 +109,16 @@ const distinct = async ({ collection, fieldName, query }) => {
         throw err;
     }
 }
+
+const connect = async () => {
+    try {
+        await mongoose.connect(connectionString, { useMongoClient: true });
+        await remove({collection: 'users', query: {}});
+        console.log('mongo db connection [success]');
+    } catch (err) {
+        console.log('mongo db connection [error]: ' + err)
+    }
+};
 
 module.exports = {
     remove,
