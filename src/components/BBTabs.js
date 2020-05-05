@@ -46,7 +46,7 @@ class BBTabs extends React.Component {
         const innerWidth = Math.round(window['innerWidth']);
         const innerHeight = Math.round(window['innerHeight']) - 53;
 
-        if (this.props.user.usersInGroup.length == 0) return;
+        if (this.props.user.usersInGroup.length === 0) return;
 
         const area = innerHeight * innerWidth;
         const singleImageArea = area / this.props.user.usersInGroup.length;
