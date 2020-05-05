@@ -32,12 +32,37 @@ const styles = theme => ({
 
 class BBTabs extends React.Component {
     state = {
-        userWidth: '25vw'
+        userWidth: '25vw',
+        imageWidth: 0,
+        imageHeight: 0,
+        totalCols:0,
+        totalRows:0,
+        overlayTop:20,
+        overlayRight:0,
+        overlayLeft:0
     };
 
-    setUserWidth = () => {
+    setImageSize = () => {
+        const innerWidth = Math.round(window['innerWidth']);
+        const innerHeight = Math.round(window['innerHeight']) - 53;
+
+        if (this.props.user.usersInGroup.length == 0) return;
+
+        const area = innerHeight * innerWidth;
+        const singleImageArea = area / this.props.user.usersInGroup.length;
+
+        const singleImageWidth = Math.sqrt(singleImageArea) * 1.2;
+        const totalCols = Math.ceil(innerWidth / singleImageWidth);
+        const imageWidth = innerWidth / totalCols;
+
+        const totalRows = Math.ceil(this.props.user.usersInGroup.length / totalCols);
+        const imageHeight = innerHeight / totalRows;
+
         this.setState({
-            userWidth: `${100 / Math.round((window['innerWidth'] / 250))}vw`
+            imageWidth,
+            imageHeight,
+            totalCols,
+            totalRows
         })
     }
 
@@ -45,19 +70,39 @@ class BBTabs extends React.Component {
 
     componentDidMount() {
         this.props.getBB();
-        this.interval = setInterval(() => this.props.getBB(), (1000*60*5));
-        this.setUserWidth();
-        window.addEventListener('resize', () => this.setUserWidth());
+        this.interval = setInterval(() => this.props.getBB(), (1000 * 60 * 5));
+        this.setImageSize();
+        window.addEventListener('resize', () => this.setImageSize());
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.user.usersInGroup.length !== this.props.user.usersInGroup.length) {
+            this.setImageSize();
+        }
     }
 
     componentWillUnmount() {
-        window.removeEventListener('resize', () => this.setUserWidth());
+        window.removeEventListener('resize', () => this.setImageSize());
         clearInterval(this.interval);
     }
 
     handleChange = (event, value) => {
         this.props.getBB(value);
     };
+
+    showUser = idx => {
+        let state = {
+            showUserIdx: idx,
+            overlayLeft: 'auto',
+            overlayRight: 'auto'
+        }
+        if ((idx%this.state.totalCols) > (this.state.totalCols/2)){
+            state.overlayLeft = 20;
+        } else {
+            state.overlayRight = 20;
+        }
+        this.setState(state);
+    }
 
     render() {
         const { classes } = this.props;
@@ -79,19 +124,46 @@ class BBTabs extends React.Component {
                                 }
                             </Tabs>
                         </AppBar>
-                        <div style={{ marginTop: 5, fontSize: 0, height: 'calc(100vh - 53px)', overflowY: 'auto' }}>
+                        <div
+                            onMouseLeave={() => this.showUser(null)}
+                            style={{ position: 'relative', marginTop: 5, background: 'black', textAlign: 'center', fontSize: 0, height: 'calc(100vh - 53px)', overflowY: 'auto' }}>
                             {
-                                this.props.user.usersInGroup.map((u, idx) => <div key={idx} style={{
-                                    width: this.state.userWidth,
-                                    backgroundImage: `url(${u.image})`,
+                                this.props.user.usersInGroup.map((u, idx) => <div
+                                    key={idx}
+                                    onMouseEnter={() => this.showUser(idx)}
+                                    style={{
+                                        width: this.state.imageWidth,
+                                        backgroundImage: `url(${u.image})`,
+                                        backgroundSize: 'cover',
+                                        backgroundColor: 'black',
+                                        backgroundPosition: 'center',
+                                        backgroundRepeat: 'no-repeat',
+                                        height: this.state.imageHeight,
+                                        display: 'inline-block',
+                                        position: 'relative'
+
+                                    }}>
+
+                                </div>)
+                            }
+                            {
+                                this.state.showUserIdx && <div style={{
+                                    width: 300,
+                                    height: 250,
+                                    backgroundImage: `url(${this.props.user.usersInGroup[this.state.showUserIdx].image})`,
                                     backgroundSize: 'cover',
                                     backgroundColor: 'black',
                                     backgroundPosition: 'center',
                                     backgroundRepeat: 'no-repeat',
-                                    height: 120,
                                     display: 'inline-block',
-                                    position: 'relative'
+                                    position: 'absolute',
+                                    top: 20,
+                                    right: this.state.overlayRight,
+                                    left: this.state.overlayLeft
                                 }}>
+                                    <div style={{ fontSize: 18, padding: 5, background: '#0086fb', position: 'absolute', top: 0, right: 0, color: 'white', fontFamily: 'arial' }}>
+                                        {this.props.user.usersInGroup[this.state.showUserIdx].roomName}
+                                    </div>
                                     <div style={{
                                         background: 'rgba(0,0,0,0.5)',
                                         color: 'white',
@@ -101,8 +173,8 @@ class BBTabs extends React.Component {
                                         bottom: 0,
                                         padding: 3,
                                         fontSize: 14
-                                    }}>{u.userName}</div>
-                                </div>)
+                                    }}>{this.props.user.usersInGroup[this.state.showUserIdx].userName}</div>
+                                </div>
                             }
                         </div>
                     </>

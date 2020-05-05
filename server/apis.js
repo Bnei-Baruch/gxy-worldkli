@@ -1,9 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const db = require('./db');
-const cfg = require('./cfg.json');
+const cfg = require('./cfg.js');
 const fs = require('fs');
-const fsExtra = require('fs-extra')
+const fsExtra = require('fs-extra');
+
+const getGroupName = roomName => {
+    let groupName = '';
+    for (const group of cfg.groupsBy) {
+        if (roomName.indexOf(group.roomPrefix) == 0) {
+            groupName = group.groupBy;
+            break;
+        }
+    }
+    return groupName;
+}
 
 router.post('/userEnter', async (request, response) => {
     try {
@@ -14,22 +25,23 @@ router.post('/userEnter', async (request, response) => {
         if (!body.roomId) throw { status: 400, data: { msg: 'roomId was not found' } };
         if (!body.image) throw { status: 400, data: { msg: 'image was not found' } };
 
+        const groupName = getGroupName(body.roomName);
 
         fs.writeFileSync(`./images/${body.userId}.jpg`, body.image.replace(/^data:image\/png;base64,/, ""), 'base64');
 
         delete body.image;
 
-        let groupName = body.roomName;
-        cfg.groupPrefix.forEach(prefix => {
-            if (body.roomName.indexOf(prefix) == 0) groupName=prefix;
-        })
+        let wc = 'M';
+        if (groupName.indexOf(' W') > 0) {
+            wc = 'W';
+        }
 
-        await db.findOneAndUpdate({ 
-            collection: 'users', 
-            data: { ...body, groupName, timestamp: new Date().getTime(), status: true },
-            query: {userId: body.userId}
+        await db.findOneAndUpdate({
+            collection: 'users',
+            data: { ...body, wc, groupName, timestamp: new Date().getTime(), status: true },
+            query: { userId: body.userId }
         });
-        
+
         console.log(`${body.userName} enter | ${body.userId}.jpg`)
         response.json();
     } catch (err) {
@@ -52,7 +64,7 @@ router.post('/userLeave', async (request, response) => {
 
 router.post('/delete', async (request, response) => {
     try {
-        await db.remove({collection: 'users', query: {}});
+        await db.remove({ collection: 'users', query: {} });
         fsExtra.emptyDirSync('./images');
         response.json();
     } catch (err) {
@@ -66,22 +78,41 @@ router.post('/getBB', async (request, response) => {
         let timestamp = body.timestamp || 0;
         let { selectedGroup } = body;
         const now = new Date().getTime();
+        let wcGroups = [];
+        // is WC
+        const _wcu = await db.getWithLimit({ collection: 'users', query: { 'status': true, wc: 'M' }, limit: 1 });
+        const _wcuw = await db.getWithLimit({ collection: 'users', query: { 'status': true, wc: 'W' }, limit: 1 });
 
-        if (!selectedGroup) {
-            console.log('!selectedGroup');
-            const _users = await db.getWithLimit({ collection: 'users', query: {'status': true}, limit: 1 });
-            console.log('_users', _users, _users.length);
-            if (!_users.length) {
-                response.json({ groups: [], usersInGroup: [], selectedGroup: '', timestamp: now });
-                return false;
-            }
-            selectedGroup = _users[0].groupName;
+        if (_wcu && _wcu.length) wcGroups.push('World Kli');
+        if (_wcuw && _wcuw.length) wcGroups.push('World Kli W');
+
+        if (!wcGroups.length) {
+            response.json({ groups: [], usersInGroup: [], selectedGroup: '', timestamp: now });
+            return false;
         }
 
-        const groups = await db.distinct({ collection: 'users', query: { 'status': true }, fieldName: 'groupName' });
+        if (!selectedGroup) {
+            selectedGroup = wcGroups[0];
+        }
+
+        const _groups = await db.distinct({ collection: 'users', query: { 'status': true }, fieldName: 'groupName' });
+        const groups = wcGroups.concat(_groups);
         console.log('groupsInDB', groups);
 
-        const _usersInGroup = await db.get({ collection: 'users', query: { groupName: selectedGroup, timestamp: { $gt: timestamp } } });
+        let query = {};
+
+        switch (selectedGroup){
+            case 'World Kli':
+                query = {wc: 'M'};
+                break;
+            case 'World Kli W':
+                query = {wc: 'W'};
+                break;
+            default:
+                query = {groupName: selectedGroup};
+        }
+
+        const _usersInGroup = await db.get({ collection: 'users', query: { ...query, timestamp: { $gt: timestamp } } });
 
         const usersInGroup = _usersInGroup.map(u => ({ ...u._doc, image: `images/${u.userId}.jpg` }))
         response.json({

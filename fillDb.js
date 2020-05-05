@@ -1,6 +1,6 @@
 
 const api = require('./server/data').api;
-const groups = require('./server/cfg.json').groupPrefix;
+const groups = require('./server/cfg.js').groupsBy;
 const groupsSufix = ['Center', '1', '2', '3', 'South', ''];
 const md5 = require('md5');
 console.log(groups);
@@ -20,29 +20,31 @@ const host = 'http://localhost:2200';
 // const host = 'https://groups.kli.one';
 
 const init = async ()=>{
-    for (let i=1; i<10;i++){
 
-        const groupName = groups[Math.floor(Math.random() * groups.length)];
-        const groupSufix = groupsSufix[Math.floor(Math.random() * groupsSufix.length)];
-        const image = images[Math.floor(Math.random() * images.length)];
-        const roomName = `${groupName} ${groupSufix}`;
-        const roomId = md5(roomName);
-
-        await api({
-            url: host + '/api/userEnter',
-            method: 'post', 
-            data: {
-                userName: `User ${i}`,
-                userId: i,
-                roomName,
-                roomId,
-                image
-            }
-        })
-        console.log(`${i} success`);
-
-        await sleep(10)
-        
+    for (const group of groups){
+        for (let i=1; i<7;i++){
+    
+            const groupSufix = groupsSufix[Math.floor(Math.random() * groupsSufix.length)];
+            const image = images[Math.floor(Math.random() * images.length)];
+            const roomName = `${group.roomPrefix} ${groupSufix}`;
+            const roomId = md5(roomName);
+    
+            await api({
+                url: host + '/api/userEnter',
+                method: 'post', 
+                data: {
+                    userName: `User ${i} ${roomName}`,
+                    userId: md5(`${i}-${roomName})`),
+                    roomName,
+                    roomId,
+                    image
+                }
+            })
+            console.log(`${i} success`);
+    
+            await sleep(10)
+            
+        }
     }
 
 };

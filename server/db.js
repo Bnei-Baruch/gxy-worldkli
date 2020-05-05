@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const fs = require('fs');
-const connectionString = 'mongodb://questionnaire:Shamati12@mongodb_mongo_1:27017/questionnaire'
-// const connectionString = 'mongodb://localhost:27017/getBB';
+// const connectionString = 'mongodb://questionnaire:Shamati12@mongodb_mongo_1:27017/questionnaire'
+const connectionString = 'mongodb://localhost:27017/getBB';
 
 mongoose.Promise = global.Promise;
 
@@ -12,7 +12,8 @@ const UserModel = mongoose.model('User', {
     roomId: String,
     timestamp: Number,
     status: { type: Boolean, default: true },
-    groupName: String
+    groupName: String,
+    wc: String
 });
 
 
