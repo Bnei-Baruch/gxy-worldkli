@@ -13,6 +13,7 @@ const getGroupName = roomName => {
             break;
         }
     }
+
     return groupName;
 }
 
