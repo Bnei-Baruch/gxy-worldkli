@@ -33,7 +33,7 @@ router.post('/userEnter', async (request, response) => {
         delete body.image;
 
         let wc = 'M';
-        if (groupName.indexOf(' W') > 0) {
+        if (groupName.indexOf(' W') > 0 || groupName.indexOf('W World') > 0) {
             wc = 'W';
         }
 
