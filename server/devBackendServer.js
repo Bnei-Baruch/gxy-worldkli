@@ -10,7 +10,7 @@ app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use('/public', express.static(path.resolve('public')))
-app.use('/images', express.static(path.resolve('images')))
+app.use('/images', express.static(path.resolve('images'), {etag:true, maxAge: (1000*60*60*3)}));
 require('./use').use(app);
 
 require('./db').connect().then(()=>app.listen(port, ()=>console.log('server up')))

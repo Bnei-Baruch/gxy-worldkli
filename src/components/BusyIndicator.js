@@ -24,7 +24,7 @@ class Header extends Component {
         <ClipLoader
           sizeUnit={"px"}
           size={150}
-          color={cwRed}
+          color='#2e88c8'
           loading={true}
         />
         {

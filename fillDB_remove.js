@@ -1,10 +1,5 @@
 
 const api = require('./server/data').api;
-const groups = require('./server/cfg.json').groupPrefix;
-const groupsSufix = ['Center', '1', '2', '3', 'South', ''];
-const md5 = require('md5');
-console.log(groups);
-
 
 const sleep = m => new Promise(r => setTimeout(r, m))
 

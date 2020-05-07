@@ -20,6 +20,7 @@
     "http": "0.0.0",
     "http-proxy": "^1.16.2",
     "https": "^1.0.0",
+    "jimp": "^0.10.3",
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
     "material-ui-pickers": "^2.2.4",

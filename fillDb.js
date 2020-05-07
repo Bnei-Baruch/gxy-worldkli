@@ -20,9 +20,9 @@ const host = 'http://localhost:2200';
 // const host = 'https://groups.kli.one';
 
 const init = async ()=>{
-
+    // const group=groups[0];
     for (const group of groups){
-        for (let i=1; i<7;i++){
+        for (let i=1; i<2;i++){
     
             const groupSufix = groupsSufix[Math.floor(Math.random() * groupsSufix.length)];
             const image = images[Math.floor(Math.random() * images.length)];

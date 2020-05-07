@@ -8,6 +8,11 @@ import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
 import _w from 'utils/wrapActionCreators';
 import * as UserActions from 'actions/user';
+import Icon from '@material-ui/core/Icon';
+import IconButton from '@material-ui/core/IconButton';
+
+const BLUE = '#2e88c8';
+// const RED = 'red';
 
 function TabContainer(props) {
     return (
@@ -28,6 +33,20 @@ const styles = theme => ({
         width: '100%',
         backgroundColor: theme.palette.background.paper,
     },
+    tabsRoot: {
+        background: BLUE,
+        'box-shadow': 'none',
+        color: 'white'
+    },
+    indicator: {
+        background: 'white'
+    },
+    tabRoot: {
+        color: '#ccc'
+    },
+    selected: {
+        color: 'white'
+    }
 });
 
 class BBTabs extends React.Component {
@@ -35,11 +54,13 @@ class BBTabs extends React.Component {
         userWidth: '25vw',
         imageWidth: 0,
         imageHeight: 0,
-        totalCols:0,
-        totalRows:0,
-        overlayTop:20,
-        overlayRight:0,
-        overlayLeft:0
+        totalCols: 0,
+        totalRows: 0,
+        overlayTop: 20,
+        overlayRight: 0,
+        overlayLeft: 0,
+        imageSufix: '',
+        gender: 'm'
     };
 
     setImageSize = () => {
@@ -58,19 +79,26 @@ class BBTabs extends React.Component {
         const totalRows = Math.ceil(this.props.user.usersInGroup.length / totalCols);
         const imageHeight = innerHeight / totalRows;
 
+        let imageSufix = '';
+
+        if (imageWidth < 40) imageSufix = '-s';
+        else if (imageWidth < 80) imageSufix = '-m';
+        else if (imageWidth < 120) imageSufix = '-l';
+
         this.setState({
             imageWidth,
             imageHeight,
             totalCols,
-            totalRows
+            totalRows,
+            imageSufix
         })
     }
 
     interval;
 
     componentDidMount() {
-        this.props.getBB();
-        this.interval = setInterval(() => this.props.getBB(), (1000 * 60 * 5));
+        this.props.getBB(false, this.state.gender);
+        this.interval = setInterval(() => this.props.getBB(false, this.state.gender), (1000 * 60 * 5));
         this.setImageSize();
         window.addEventListener('resize', () => this.setImageSize());
     }
@@ -87,7 +115,7 @@ class BBTabs extends React.Component {
     }
 
     handleChange = (event, value) => {
-        this.props.getBB(value);
+        this.props.getBB(value, this.state.gender);
     };
 
     showUser = idx => {
@@ -96,12 +124,21 @@ class BBTabs extends React.Component {
             overlayLeft: 'auto',
             overlayRight: 'auto'
         }
-        if ((idx%this.state.totalCols) > (this.state.totalCols/2)){
+        if ((idx % this.state.totalCols) > (this.state.totalCols / 2)) {
             state.overlayLeft = 20;
         } else {
             state.overlayRight = 20;
         }
         this.setState(state);
+    }
+
+    changeGender = () => {
+        let newGender = 'm'
+        if (this.state.gender === 'm'){
+            newGender = 'w'
+        }
+        this.setState({gender: newGender});
+        this.props.getBB('clear', newGender);
     }
 
     render() {
@@ -112,28 +149,39 @@ class BBTabs extends React.Component {
                 {
                     (this.props.user.selectedGroupIdx > -1) && <>
                         <AppBar position="static" color="default">
-                            <Tabs
-                                value={this.props.user.selectedGroupIdx}
-                                onChange={this.handleChange}
-                                indicatorColor="primary"
-                                textColor="primary"
-                                variant="scrollable"
-                                scrollButtons="auto">
-                                {
-                                    this.props.user.groups.map((g, idx) => <Tab key={idx} label={g} />)
-                                }
-                            </Tabs>
+                            <>
+                                <Tabs
+                                    style={{ width: 'calc(100% - 48px)' }}
+                                    classes={{ root: classes.tabsRoot, indicator: classes.indicator }}
+                                    value={this.props.user.selectedGroupIdx}
+                                    onChange={this.handleChange}
+                                    indicatorColor="primary"
+                                    textColor="primary"
+                                    variant="scrollable"
+                                    scrollButtons="auto">
+                                    {
+                                        this.props.user.groups.map((g, idx) => <Tab style={{ color: 'white' }} classes={{ root: classes.tabRoot, selected: classes.selected }} key={idx} label={g} />)
+                                    }
+                                </Tabs>
+                                <div style={{ width: 48, height: 48, background: BLUE, position: 'absolute', top: 0, right: 0 }}>
+                                    <IconButton
+                                        onClick={()=>this.changeGender()} 
+                                        style={{color: 'white'}} className={classes.button} aria-label="Delete">
+                                        <Icon>swap_horiz</Icon>
+                                    </IconButton>
+                                </div>
+                            </>
                         </AppBar>
                         <div
                             onMouseLeave={() => this.showUser(null)}
-                            style={{ position: 'relative', marginTop: 5, background: 'black', textAlign: 'center', fontSize: 0, height: 'calc(100vh - 53px)', overflowY: 'auto' }}>
+                            style={{ position: 'relative', background: 'black', textAlign: 'center', fontSize: 0, height: 'calc(100vh - 48px)', overflowY: 'auto' }}>
                             {
                                 this.props.user.usersInGroup.map((u, idx) => <div
                                     key={idx}
                                     onMouseEnter={() => this.showUser(idx)}
                                     style={{
                                         width: this.state.imageWidth,
-                                        backgroundImage: `url(${u.image})`,
+                                        backgroundImage: `url(${u.image.replace('.jpg', `${this.state.imageSufix}.jpg`)})`,
                                         backgroundSize: 'cover',
                                         backgroundColor: 'black',
                                         backgroundPosition: 'center',
@@ -161,7 +209,7 @@ class BBTabs extends React.Component {
                                     right: this.state.overlayRight,
                                     left: this.state.overlayLeft
                                 }}>
-                                    <div style={{ fontSize: 18, padding: 5, background: '#0086fb', position: 'absolute', top: 0, right: 0, color: 'white', fontFamily: 'arial' }}>
+                                    <div style={{ fontSize: 18, padding: 5, background: BLUE, position: 'absolute', top: 0, right: 0, color: 'white', fontFamily: 'arial' }}>
                                         {this.props.user.usersInGroup[this.state.showUserIdx].roomName}
                                     </div>
                                     <div style={{

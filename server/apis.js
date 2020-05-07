@@ -4,6 +4,7 @@ const db = require('./db');
 const cfg = require('./cfg.js');
 const fs = require('fs');
 const fsExtra = require('fs-extra');
+const resizeImage = require('./imageUtils').resizeImage;
 
 const getGroupName = roomName => {
     let groupName = '';
@@ -29,6 +30,9 @@ router.post('/userEnter', async (request, response) => {
         const groupName = getGroupName(body.roomName);
 
         fs.writeFileSync(`./images/${body.userId}.jpg`, body.image.replace(/^data:image\/png;base64,/, ""), 'base64');
+        await resizeImage({imgPath: `./images/${body.userId}.jpg`, sufix: '-s', width: 40});
+        await resizeImage({imgPath: `./images/${body.userId}.jpg`, sufix: '-m', width: 80});
+        await resizeImage({imgPath: `./images/${body.userId}.jpg`, sufix: '-l', width: 120});
 
         delete body.image;
 
@@ -76,6 +80,7 @@ router.post('/delete', async (request, response) => {
 router.post('/getBB', async (request, response) => {
     try {
         const { body } = request;
+        const gender = (body.gender || 'm').toUpperCase();
         let timestamp = body.timestamp || 0;
         let { selectedGroup } = body;
         const now = new Date().getTime();
@@ -92,13 +97,13 @@ router.post('/getBB', async (request, response) => {
             return false;
         }
 
-        if (!selectedGroup) {
-            selectedGroup = wcGroups[0];
-        }
-
         const _groups = await db.distinct({ collection: 'users', query: { 'status': true }, fieldName: 'groupName' });
-        const groups = wcGroups.concat(_groups);
+        const groups = wcGroups.concat(_groups).filter(g => gender=='W' ? (g.indexOf(' W') > -1) : (g.indexOf(' W') === -1));
         console.log('groupsInDB', groups);
+
+        if (!selectedGroup) {
+            selectedGroup = groups[0];
+        }
 
         let query = {};
 
