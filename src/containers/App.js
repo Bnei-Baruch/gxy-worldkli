@@ -6,6 +6,7 @@ import wrapActionCreators from '../utils/wrapActionCreators';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { withRouter } from 'react-router';
 import * as NotificationActions from '../actions/notification';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import BBTabs from 'components/BBTabs';
 
 class App extends Component {
@@ -25,7 +26,10 @@ class App extends Component {
         <MuiThemeProvider theme={theme}>
           <BusyIndicator />
           <NotificationDialog />
-          <BBTabs />
+          <Switch>
+            <Route exact path="/:gender" render={()=><BBTabs />} />
+            <Redirect exact from='/' to='/m'/>
+          </Switch>
         </MuiThemeProvider>
       </div>
     );

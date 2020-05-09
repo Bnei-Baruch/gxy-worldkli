@@ -7,7 +7,7 @@ const fsExtra = require('fs-extra');
 const resizeImage = require('./imageUtils').resizeImage;
 
 const getGroupName = roomName => {
-    let groupName = '';
+    let groupName = false;
     for (const group of cfg.groupsBy) {
         if (roomName.indexOf(group.roomPrefix) == 0) {
             groupName = group.groupBy;
@@ -28,6 +28,8 @@ router.post('/userEnter', async (request, response) => {
         if (!body.image) throw { status: 400, data: { msg: 'image was not found' } };
 
         const groupName = getGroupName(body.roomName);
+
+        if (!groupName) throw {data: {msg: 'unfamiliar group detected'}};
 
         fs.writeFileSync(`./images/${body.userId}.jpg`, body.image.replace(/^data:image\/png;base64,/, ""), 'base64');
         await resizeImage({imgPath: `./images/${body.userId}.jpg`, sufix: '-s', width: 40});

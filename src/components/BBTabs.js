@@ -8,8 +8,11 @@ import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
 import _w from 'utils/wrapActionCreators';
 import * as UserActions from 'actions/user';
-import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
+import { withRouter } from 'react-router';
+import { Icon as Icn } from 'react-icons-kit'
+import { man } from 'react-icons-kit/ionicons/man'
+import { woman } from 'react-icons-kit/ionicons/woman'
 
 const BLUE = '#2e88c8';
 // const RED = 'red';
@@ -59,8 +62,7 @@ class BBTabs extends React.Component {
         overlayTop: 20,
         overlayRight: 0,
         overlayLeft: 0,
-        imageSufix: '',
-        gender: 'm'
+        imageSufix: ''
     };
 
     setImageSize = () => {
@@ -97,8 +99,8 @@ class BBTabs extends React.Component {
     interval;
 
     componentDidMount() {
-        this.props.getBB(false, this.state.gender);
-        this.interval = setInterval(() => this.props.getBB(false, this.state.gender), (1000 * 60 * 5));
+        this.props.getBB(false, this.props.match.params.gender);
+        this.interval = setInterval(() => this.props.getBB(false, this.props.match.params.gender), (1000 * 60 * 5));
         this.setImageSize();
         window.addEventListener('resize', () => this.setImageSize());
     }
@@ -106,6 +108,9 @@ class BBTabs extends React.Component {
     componentDidUpdate(prevProps) {
         if (prevProps.user.usersInGroup.length !== this.props.user.usersInGroup.length) {
             this.setImageSize();
+        }
+        if (prevProps.match.params.gender !== this.props.match.params.gender) {
+            this.props.getBB('clear', this.props.match.params.gender);
         }
     }
 
@@ -115,7 +120,7 @@ class BBTabs extends React.Component {
     }
 
     handleChange = (event, value) => {
-        this.props.getBB(value, this.state.gender);
+        this.props.getBB(value, this.props.match.params.gender);
     };
 
     showUser = idx => {
@@ -133,12 +138,8 @@ class BBTabs extends React.Component {
     }
 
     changeGender = () => {
-        let newGender = 'm'
-        if (this.state.gender === 'm'){
-            newGender = 'w'
-        }
-        this.setState({gender: newGender});
-        this.props.getBB('clear', newGender);
+        let gender = this.props.match.params.gender === 'w' ? 'm' : 'w';
+        this.props.history.push('/' + gender);
     }
 
     render() {
@@ -165,9 +166,9 @@ class BBTabs extends React.Component {
                                 </Tabs>
                                 <div style={{ width: 48, height: 48, background: BLUE, position: 'absolute', top: 0, right: 0 }}>
                                     <IconButton
-                                        onClick={()=>this.changeGender()} 
-                                        style={{color: 'white'}} className={classes.button} aria-label="Delete">
-                                        <Icon>swap_horiz</Icon>
+                                        onClick={() => this.changeGender()}
+                                        style={{ color: 'white' }} className={classes.button} aria-label="Delete">
+                                        <Icn style={{ position: 'relative', top: -3 }} size='120%' icon={this.props.match.params.gender === 'w' ? woman : man} />
                                     </IconButton>
                                 </div>
                             </>
@@ -236,6 +237,6 @@ BBTabs.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default connect(state => ({
+export default withRouter(connect(state => ({
     user: state.user
-}), _w(UserActions))(withStyles(styles)(BBTabs));
+}), _w(UserActions))(withStyles(styles)(BBTabs)));

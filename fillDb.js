@@ -22,7 +22,7 @@ const host = 'http://localhost:2200';
 const init = async ()=>{
     // const group=groups[0];
     for (const group of groups){
-        for (let i=1; i<2;i++){
+        for (let i=1; i<5;i++){
     
             const groupSufix = groupsSufix[Math.floor(Math.random() * groupsSufix.length)];
             const image = images[Math.floor(Math.random() * images.length)];
@@ -42,7 +42,7 @@ const init = async ()=>{
             })
             console.log(`${i} success`);
     
-            await sleep(10)
+            await sleep(100)
             
         }
     }
