@@ -6,10 +6,21 @@ import wrapActionCreators from '../utils/wrapActionCreators';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { withRouter } from 'react-router';
 import * as NotificationActions from '../actions/notification';
+import * as AuthActions from '../actions/auth';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import BBTabs from 'components/BBTabs';
+import LoginPage from 'containers/LoginPage';
+import CallbackPage from 'containers/CallbackPage';
 
 class App extends Component {
+
+  componentDidMount() {
+
+  }
+
+  routeAuthenticate = Component => {
+    return !this.props.user || this.props.user.expired ? <LoginPage /> : <Component />
+  }
 
   render() {
     let appS = {
@@ -27,8 +38,10 @@ class App extends Component {
           <BusyIndicator />
           <NotificationDialog />
           <Switch>
-            <Route exact path="/:gender" render={()=><BBTabs />} />
-            <Redirect exact from='/' to='/m'/>
+            <Route path="/callback" render={() => <CallbackPage />} />
+            <Route exact path="/login" render={() => this.routeAuthenticate(LoginPage)} />
+            <Route exact path="/:gender" render={() => this.routeAuthenticate(BBTabs)} />
+            <Redirect exact from='/' to='/login' />
           </Switch>
         </MuiThemeProvider>
       </div>
@@ -37,5 +50,6 @@ class App extends Component {
 }
 
 export default withRouter(connect(state => ({
-  notification: state.notification
-}), wrapActionCreators({ ...NotificationActions }))(App));
+  notification: state.notification,
+  user: state.oidc.user
+}), wrapActionCreators({ ...NotificationActions, ...AuthActions }))(App));

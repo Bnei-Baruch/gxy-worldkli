@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'react-router-redux';
 import App from './App';
+import { OidcProvider } from 'redux-oidc';
+import userManager from '../utils/userManager';
 
 export default class Root extends Component {
 
@@ -15,16 +17,18 @@ export default class Root extends Component {
 
     return (
       <Provider store={store}>
-        <ConnectedRouter history={history}>
-          <div style={rootS}>
-            <App></App>
+        <OidcProvider store={store} userManager={userManager}>
+          <ConnectedRouter history={history}>
+            <div style={rootS}>
+              <App></App>
 
-            {isDevEnv &&
-              <div>
-              </div>
-            }
-          </div>
-        </ConnectedRouter>
+              {isDevEnv &&
+                <div>
+                </div>
+              }
+            </div>
+          </ConnectedRouter>
+        </OidcProvider>
       </Provider>
     );
   }
