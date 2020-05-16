@@ -23,6 +23,7 @@ class CallbackPage extends React.Component {
         >
         <ConnectGalaxyT />
       </CallbackComponent>
+      
     );
   }
 }
