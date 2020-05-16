@@ -1,19 +1,23 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import wrapActionCreators from '../utils/wrapActionCreators';
-// import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { withRouter } from 'react-router';
 import * as NotificationActions from '../actions/notification';
 import * as AuthActions from '../actions/auth';
 import userManager from "utils/userManager";
+import Login from 'components/Login';
+import Loading from 'components/Loading';
 
 class App extends Component {
 
+  state = {
+    status: 'loading'
+  }
+
   componentDidMount() {
-    userManager.signinSilent().then(user=>{
-      console.log('user', user)
+    userManager.signinSilent().then(user => {
       if (!!user) userManager.signinRedirect();
-    })
+    }).catch(() => this.setState({ status: 'login' }));
   }
 
   onLoginButtonClick(event) {
@@ -22,18 +26,14 @@ class App extends Component {
   }
 
   render() {
-    // let pageS = {
-    //   height: '100%'
-    // }
-    // const theme = createMuiTheme({
-    //   typography: {
-    //     useNextVariants: true,
-    //   }
-    // });
-
     return (
-      <div>
-       <button onClick={this.onLoginButtonClick}>login</button>
+      <div style={{height: '100%'}}>
+        {
+          this.state.status === 'loading' && <Loading />
+        }
+        {
+          this.state.status === 'login' && <Login onLoginClick={this.onLoginButtonClick} />
+        }
       </div>
     );
   }

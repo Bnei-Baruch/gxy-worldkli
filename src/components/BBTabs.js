@@ -13,6 +13,7 @@ import { withRouter } from 'react-router';
 import { Icon as Icn } from 'react-icons-kit'
 import { man } from 'react-icons-kit/ionicons/man'
 import { woman } from 'react-icons-kit/ionicons/woman'
+import Empty from 'components/Empty';
 
 const BLUE = '#2e88c8';
 // const RED = 'red';
@@ -148,7 +149,7 @@ class BBTabs extends React.Component {
         return (
             <div className={classes.root}>
                 {
-                    (this.props.user.selectedGroupIdx > -1) && <>
+                    (this.props.user.selectedGroupIdx > -1) ? <>
                         <AppBar position="static" color="default">
                             <>
                                 <Tabs
@@ -226,7 +227,7 @@ class BBTabs extends React.Component {
                                 </div>
                             }
                         </div>
-                    </>
+                    </> : <Empty />
                 }
             </div>
         );

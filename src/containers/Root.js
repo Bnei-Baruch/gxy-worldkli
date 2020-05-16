@@ -20,6 +20,9 @@ export default class Root extends Component {
         <OidcProvider store={store} userManager={userManager}>
           <ConnectedRouter history={history}>
             <div style={rootS}>
+              <style>
+                @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;700&display=swap');
+              </style>
               <App></App>
 
               {isDevEnv &&
