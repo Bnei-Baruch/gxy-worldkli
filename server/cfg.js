@@ -1,5 +1,5 @@
 // CONSTS
-const RU = 'Russia';
+const RU = 'Rus';
 const EU = 'Europe';
 const AS = 'Asia';
 const NA = 'North America';
@@ -8,7 +8,7 @@ const PT = 'Petach Tikva';
 const LA = 'Latin America';
 
 // WOMEN CONST
-const RUW = 'Russia W';
+const RUW = 'Rus W';
 const EUW = 'Europe W';
 const ASW = 'Asia W';
 const NAW = 'North America W';
