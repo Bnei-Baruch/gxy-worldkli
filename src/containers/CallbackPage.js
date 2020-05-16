@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { CallbackComponent } from "redux-oidc";
 import userManager from "utils/userManager";
 import { withRouter } from 'react-router';
-import ConnectGalaxy from 'components/ConnectGalaxy';
+import ConnectGalaxyT from 'components/ConnectGalaxyT';
 
 class CallbackPage extends React.Component {
 
@@ -21,7 +21,7 @@ class CallbackPage extends React.Component {
           console.error('callback error', error);
         }}
         >
-        <ConnectGalaxy />
+        <ConnectGalaxyT />
       </CallbackComponent>
     );
   }

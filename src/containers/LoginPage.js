@@ -5,8 +5,8 @@ import { withRouter } from 'react-router';
 import * as NotificationActions from '../actions/notification';
 import * as AuthActions from '../actions/auth';
 import userManager from "utils/userManager";
-import Login from 'components/Login';
-import Loading from 'components/Loading';
+import LoginT from 'components/LoginT';
+import LoadingT from 'components/LoadingT';
 
 class App extends Component {
 
@@ -29,10 +29,10 @@ class App extends Component {
     return (
       <div style={{height: '100%'}}>
         {
-          this.state.status === 'loading' && <Loading />
+          this.state.status === 'loading' && <LoadingT />
         }
         {
-          this.state.status === 'login' && <Login onLoginClick={this.onLoginButtonClick} />
+          this.state.status === 'login' && <LoginT onLoginClick={this.onLoginButtonClick} />
         }
       </div>
     );
