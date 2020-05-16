@@ -12,6 +12,7 @@ class App extends Component {
   componentDidMount() {
     userManager.signinSilent().then(user=>{
       console.log('user', user)
+      if (!!user) userManager.signinRedirect();
     })
   }
 
