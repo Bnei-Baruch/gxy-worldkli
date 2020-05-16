@@ -20,13 +20,13 @@ if (project.env === 'development') {
 
   logger.info('Enabling webpack development and HMR middleware')
   app.use(require('webpack-dev-middleware')(compiler, {
-    publicPath  : webpackConfig.output.publicPath,
-    contentBase : path.resolve(project.basePath, project.srcDir),
-    hot         : true,
-    quiet       : false,
-    noInfo      : false,
-    lazy        : false,
-    stats       : 'normal',
+    publicPath: webpackConfig.output.publicPath,
+    contentBase: path.resolve(project.basePath, project.srcDir),
+    hot: true,
+    quiet: false,
+    noInfo: false,
+    lazy: false,
+    stats: 'normal',
   }))
   app.use(require('webpack-hot-middleware')(compiler, {
     path: '/__webpack_hmr'
@@ -37,8 +37,8 @@ if (project.env === 'development') {
   // of development since this directory will be copied into ~/dist
   // when the application is compiled.
   app.use(express.static(path.resolve(project.basePath, 'public')))
-  
-  app.use("/oauth/*", function(req, res) {
+
+  app.use("/oauth/*", function (req, res) {
     req.url = req.baseUrl; // Janky hack...
     apiProxy.web(req, res, {
       target: {
@@ -47,8 +47,8 @@ if (project.env === 'development') {
       }
     });
   });
-  
-  app.use("/api/*", function(req, res) {
+
+  app.use("/api/*", function (req, res) {
     req.url = req.baseUrl; // Janky hack...
     apiProxy.web(req, res, {
       target: {
