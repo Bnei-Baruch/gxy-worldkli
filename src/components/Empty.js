@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import WcvLogo from 'components/WcvLogo';
-import Button from '@material-ui/core/Button';
 
 export default class Empty extends Component {
   render() {
