@@ -17,7 +17,6 @@ export default class Empty extends Component {
       <div style={pageS}>
         <WcvLogoT style={{ padding: 20 }} />
         <div style={btnS}>
-          NO USERS WERE FOUND<br/>
           auto refresh in 10 min.
         </div>
       </div>
