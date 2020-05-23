@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions';
-import { fillBB } from '../actions/user';
+import { fillBB, refillBB } from '../actions/user';
 
 const initialState = {
   timestamp: 0,
@@ -10,6 +10,7 @@ const initialState = {
 };
 
 export default handleActions({
+  [refillBB]: (state, action) => action.payload, initialState,
   [fillBB]: (state, action) => {
     const payload = action.payload;
 

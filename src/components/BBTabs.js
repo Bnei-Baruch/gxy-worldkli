@@ -14,6 +14,7 @@ import { Icon as Icn } from 'react-icons-kit'
 import { man } from 'react-icons-kit/ionicons/man'
 import { woman } from 'react-icons-kit/ionicons/woman'
 import EmptyT from 'components/EmptyT';
+import FriendImage from 'components/FriendImage';
 
 const BLUE = '#2e88c8';
 // const RED = 'red';
@@ -178,23 +179,15 @@ class BBTabs extends React.Component {
                             onMouseLeave={() => this.showUser(null)}
                             style={{ position: 'relative', background: 'black', textAlign: 'center', fontSize: 0, height: 'calc(100vh - 48px)', overflowY: 'auto' }}>
                             {
-                                this.props.user.usersInGroup.map((u, idx) => <div
+                                this.props.user.usersInGroup.map((u, idx) => <FriendImage
+                                    loadTimer={idx*10}
                                     key={idx}
                                     onMouseEnter={() => this.showUser(idx)}
-                                    style={{
-                                        width: this.state.imageWidth,
-                                        backgroundImage: `url(${u.image.replace('.jpg', `${this.state.imageSufix}.jpg`)})`,
-                                        backgroundSize: 'cover',
-                                        backgroundColor: 'black',
-                                        backgroundPosition: 'center',
-                                        backgroundRepeat: 'no-repeat',
-                                        height: this.state.imageHeight,
-                                        display: 'inline-block',
-                                        position: 'relative'
-
-                                    }}>
-
-                                </div>)
+                                    imageWidth={this.state.imageWidth}
+                                    imageHeight={this.state.imageHeight}
+                                    image={u.image}
+                                    imageSufix={this.state.imageSufix}/>
+                                )
                             }
                             {
                                 this.state.showUserIdx && <div style={{
