@@ -8,13 +8,16 @@ import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
 import _w from 'utils/wrapActionCreators';
 import * as UserActions from 'actions/user';
+import * as RoomsActions from 'actions/rooms';
 import IconButton from '@material-ui/core/IconButton';
 import { withRouter } from 'react-router';
 import { Icon as Icn } from 'react-icons-kit'
 import { man } from 'react-icons-kit/ionicons/man'
 import { woman } from 'react-icons-kit/ionicons/woman'
+import { plus } from 'react-icons-kit/fa/plus'
 import EmptyT from 'components/EmptyT';
 import FriendImage from 'components/FriendImage';
+import GetRoomDialog from 'components/GetRoomDialog';
 
 const BLUE = '#2e88c8';
 // const RED = 'red';
@@ -64,7 +67,8 @@ class BBTabs extends React.Component {
         overlayTop: 20,
         overlayRight: 0,
         overlayLeft: 0,
-        imageSufix: ''
+        imageSufix: '',
+        openGetRoomDialog: false
     };
 
     setImageSize = () => {
@@ -144,6 +148,14 @@ class BBTabs extends React.Component {
         this.props.history.push('/' + gender);
     }
 
+    addRoom = roomName => {
+        this.setState({ openGetRoomDialog: false });
+        if (roomName){
+            this.props.addRoom(roomName);
+            alert('under construction');
+        }
+    }
+
     render() {
         const { classes } = this.props;
 
@@ -154,7 +166,7 @@ class BBTabs extends React.Component {
                         <AppBar position="static" color="default">
                             <>
                                 <Tabs
-                                    style={{ width: 'calc(100% - 48px)' }}
+                                    style={{ width: 'calc(100% - 96px)' }}
                                     classes={{ root: classes.tabsRoot, indicator: classes.indicator }}
                                     value={this.props.user.selectedGroupIdx}
                                     onChange={this.handleChange}
@@ -166,12 +178,21 @@ class BBTabs extends React.Component {
                                         this.props.user.groups.map((g, idx) => <Tab style={{ color: 'white' }} classes={{ root: classes.tabRoot, selected: classes.selected }} key={idx} label={g} />)
                                     }
                                 </Tabs>
-                                <div style={{ width: 48, height: 48, background: BLUE, position: 'absolute', top: 0, right: 0 }}>
-                                    <IconButton
-                                        onClick={() => this.changeGender()}
-                                        style={{ color: 'white' }} className={classes.button} aria-label="Delete">
-                                        <Icn style={{ position: 'relative', top: -3 }} size='120%' icon={this.props.match.params.gender === 'w' ? woman : man} />
-                                    </IconButton>
+                                <div style={{ width: 96, height: 48, background: BLUE, position: 'absolute', top: 0, right: 0 }}>
+                                    <div style={{ width: 48, height: 48, display: 'inline-block' }}>
+                                        <IconButton
+                                            onClick={() => this.setState({ openGetRoomDialog: true })}
+                                            style={{ color: 'white' }} className={classes.button} aria-label="Delete">
+                                            <Icn style={{ position: 'relative', top: -5 }} size='60%' icon={plus} />
+                                        </IconButton>
+                                    </div>
+                                    <div style={{ width: 48, height: 48, display: 'inline-block' }}>
+                                        <IconButton
+                                            onClick={() => this.changeGender()}
+                                            style={{ color: 'white' }} className={classes.button} aria-label="Delete">
+                                            <Icn style={{ position: 'relative', top: -3 }} size='120%' icon={this.props.match.params.gender === 'w' ? woman : man} />
+                                        </IconButton>
+                                    </div>
                                 </div>
                             </>
                         </AppBar>
@@ -180,13 +201,13 @@ class BBTabs extends React.Component {
                             style={{ position: 'relative', background: 'black', textAlign: 'center', fontSize: 0, height: 'calc(100vh - 48px)', overflowY: 'auto' }}>
                             {
                                 this.props.user.usersInGroup.map((u, idx) => <FriendImage
-                                    loadTimer={idx*10}
+                                    loadTimer={idx * 10}
                                     key={idx}
                                     onMouseEnter={() => this.showUser(idx)}
                                     imageWidth={this.state.imageWidth}
                                     imageHeight={this.state.imageHeight}
                                     image={u.image}
-                                    imageSufix={this.state.imageSufix}/>
+                                    imageSufix={this.state.imageSufix} />
                                 )
                             }
                             {
@@ -222,6 +243,9 @@ class BBTabs extends React.Component {
                         </div>
                     </> : <EmptyT />
                 }
+                {
+                    this.state.openGetRoomDialog && <GetRoomDialog close={roomName => this.addRoom(roomName)} onSelect={roomName => this.addRoom(roomName)} />
+                }
             </div>
         );
     }
@@ -233,4 +257,4 @@ BBTabs.propTypes = {
 
 export default withRouter(connect(state => ({
     user: state.user
-}), _w(UserActions))(withStyles(styles)(BBTabs)));
+}), _w({...UserActions, ...RoomsActions}))(withStyles(styles)(BBTabs)));

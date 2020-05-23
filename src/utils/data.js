@@ -10,6 +10,10 @@ const apiMap = {
     getBB: {
         url: '/api/getBB',
         method: 'post'
+    },
+    getRooms: {
+        url: '/api/getRooms',
+        method: 'post'
     }
 }
 

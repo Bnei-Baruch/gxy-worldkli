@@ -81,6 +81,29 @@ router.post('/delete', async (request, response) => {
     }
 });
 
+router.post('/getRooms', async (request, response) => {
+    try {
+        const { body } = request;
+        const wc = body.wc || 'M';
+
+        const _allUsers = await db.get({ collection: 'users', query: { status: true, wc } });
+
+        let _rooms = {};
+
+        _allUsers.forEach(user => {
+            if (!_rooms[user.roomName]) _rooms[user.roomName] = 0;
+            _rooms[user.roomName]++
+        });
+
+        response.json({
+            rooms: Object.keys(_rooms).map(roomName => ({roomName, sum: _rooms[roomName]}))
+        });
+
+    } catch (err) {
+        response.status(err.status).json(err.data || { msg: 'enter user error', err });
+    }
+});
+
 router.post('/getBB', async (request, response) => {
     try {
         const { body } = request;
@@ -88,6 +111,8 @@ router.post('/getBB', async (request, response) => {
         let timestamp = body.timestamp || 0;
         let { selectedGroup } = body;
         const now = new Date().getTime();
+        let rooms = body.rooms || [];
+
         let wcGroups = [];
         // is WC
         const _wcu = await db.getWithLimit({ collection: 'users', query: { 'status': true, wc: 'M' }, limit: 1 });
@@ -129,7 +154,8 @@ router.post('/getBB', async (request, response) => {
             timestamp: now,
             selectedGroup: selectedGroup,
             usersInGroup,
-            groups
+            groups,
+            rooms
         });
 
     } catch (err) {
