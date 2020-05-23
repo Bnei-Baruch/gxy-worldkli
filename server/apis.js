@@ -29,12 +29,12 @@ router.post('/userEnter', async (request, response) => {
 
         const groupName = getGroupName(body.roomName);
 
-        if (!groupName) throw {data: {msg: 'unfamiliar group detected'}};
+        if (!groupName) throw { data: { msg: 'unfamiliar group detected' } };
 
         fs.writeFileSync(`./images/${body.userId}.jpg`, body.image.replace(/^data:image\/png;base64,/, ""), 'base64');
-        await resizeImage({imgPath: `./images/${body.userId}.jpg`, sufix: '-s', width: 40});
-        await resizeImage({imgPath: `./images/${body.userId}.jpg`, sufix: '-m', width: 80});
-        await resizeImage({imgPath: `./images/${body.userId}.jpg`, sufix: '-l', width: 120});
+        await resizeImage({ imgPath: `./images/${body.userId}.jpg`, sufix: '-s', width: 40 });
+        await resizeImage({ imgPath: `./images/${body.userId}.jpg`, sufix: '-m', width: 80 });
+        await resizeImage({ imgPath: `./images/${body.userId}.jpg`, sufix: '-l', width: 120 });
 
         delete body.image;
 
@@ -43,9 +43,11 @@ router.post('/userEnter', async (request, response) => {
             wc = 'W';
         }
 
+        const now = new Date().getTime();
+
         await db.findOneAndUpdate({
             collection: 'users',
-            data: { ...body, wc, groupName, timestamp: new Date().getTime(), status: true },
+            data: { ...body, wc, groupName, updated: now, status: true, $setOnInsert: { created: now } },
             query: { userId: body.userId }
         });
 
@@ -60,8 +62,8 @@ router.post('/userLeave', async (request, response) => {
     try {
         const { body } = request;
         if (!body.userId) throw { status: 400, data: { msg: 'userId was not found' } };
-        const timestamp = new Date().getTime();
-        await db.edit({ collection: 'users', query: { userId: body.userId }, data: { status: false, timestamp } });
+        const now = new Date().getTime();
+        await db.edit({ collection: 'users', query: { userId: body.userId }, data: { status: false } });
         console.log(`${body.userId} left`);
         response.json();
     } catch (err) {
@@ -100,7 +102,7 @@ router.post('/getBB', async (request, response) => {
         }
 
         const _groups = await db.distinct({ collection: 'users', query: { 'status': true }, fieldName: 'groupName' });
-        const groups = wcGroups.concat(_groups).filter(g => gender=='W' ? (g.indexOf(' W') > -1) : (g.indexOf(' W') === -1));
+        const groups = wcGroups.concat(_groups).filter(g => gender == 'W' ? (g.indexOf(' W') > -1) : (g.indexOf(' W') === -1));
         console.log('groupsInDB', groups);
 
         if (!selectedGroup) {
@@ -109,18 +111,18 @@ router.post('/getBB', async (request, response) => {
 
         let query = {};
 
-        switch (selectedGroup){
+        switch (selectedGroup) {
             case 'World Kli':
-                query = {wc: 'M'};
+                query = { wc: 'M' };
                 break;
             case 'World Kli W':
-                query = {wc: 'W'};
+                query = { wc: 'W' };
                 break;
             default:
-                query = {groupName: selectedGroup};
+                query = { groupName: selectedGroup };
         }
 
-        const _usersInGroup = await db.get({ collection: 'users', query: { ...query, timestamp: { $gt: timestamp } } });
+        const _usersInGroup = await db.get({ collection: 'users', query: { ...query, updated: { $gt: timestamp } } });
 
         const usersInGroup = _usersInGroup.map(u => ({ ...u._doc, image: `images/${u.userId}.jpg` }))
         response.json({

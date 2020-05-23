@@ -10,6 +10,8 @@ const UserModel = mongoose.model('User', {
     userId: String,
     roomName: String,
     roomId: String,
+    created: Number,
+    updated: Number,
     timestamp: Number,
     status: { type: Boolean, default: true },
     groupName: String,
