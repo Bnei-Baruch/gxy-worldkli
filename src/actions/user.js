@@ -31,7 +31,7 @@ const setTimers = (dispatch) => {
     shuffleInterval = setInterval(() => !busy && dispatch(shuffleBB()), (1000 * 10));
   }, (1000 * 20))
 
-  updateInterval = setInterval(() => dispatch(updateBB()), (1000 * 15));
+  updateInterval = setInterval(() => dispatch(updateBB()), (1000 * 60 * 10));
 }
 
 export const updateBB = () => async (dispatch, getState) => {
