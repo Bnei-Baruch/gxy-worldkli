@@ -1,34 +1,32 @@
 import { handleActions } from 'redux-actions';
-import { fillBB, refillBB } from '../actions/user';
+import { _updateBB, overrideBB, setGender, _addRoom } from '../actions/user';
 
 const initialState = {
   timestamp: 0,
-  selectedGroup: '',
-  selectedGroupIdx: -1,
-  usersInGroup: [],
-  groups: []
+  selectedTabIdx: -1,
+  usersInTab: [],
+  tabs: [],
+  gender: 'm'
 };
 
 export default handleActions({
-  [refillBB]: (state, action) => action.payload, initialState,
-  [fillBB]: (state, action) => {
+  [setGender]: (state, action) => ({...state, gender: action.payload}), 
+  [overrideBB]: (state, action) => ({...state, ...action.payload}), 
+  [_addRoom]: (state, action) => ({...state, tabs: state.tabs.concat({type: 'room', label: action.payload})}), 
+  [_updateBB]: (state, action) => {
     const payload = action.payload;
 
-    const addedUsers = payload.usersInGroup.filter(u => !!u.status);
-    const removedUserIds = payload.usersInGroup.filter(u => !u.status).map(u => u.userId);
+    const addedUsers = payload.usersInTab.filter(u => !!u.status);
+    const removedUserIds = payload.usersInTab.filter(u => !u.status).map(u => u.userId);
 
-    if (state.selectedGroup !== payload.selectedGroup) {
-      return {...payload, usersInGroup: addedUsers, selectedGroupIdx: payload.groups.indexOf(payload.selectedGroup)};
-    }
-
-
-    const usersInGroup = state.usersInGroup.filter(u => !removedUserIds.includes(u.userId)).concat(addedUsers);
+    const usersInTab = state.usersInTab.filter(u => !removedUserIds.includes(u.userId)).concat(addedUsers);
     return {
+      ...state,
       timestamp: payload.timestamp,
-      selectedGroup: payload.selectedGroup,
-      selectedGroupIdx: payload.groups.indexOf(payload.selectedGroup),
-      usersInGroup,
-      groups: payload.groups
+      selectedTabIdx: payload.selectedTabIdx,
+      usersInTab,
+      tabs: payload.tabs
     };
+
   },
 }, initialState);

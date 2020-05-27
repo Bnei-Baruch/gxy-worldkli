@@ -2,49 +2,76 @@ import { createAction } from 'redux-actions';
 import { api } from '../utils/data';
 import { shuffle } from '../utils/utils';
 
-export const fillBB = createAction('FILL_BB');
-export const refillBB = createAction('REFILL_BB');
+export const overrideBB = createAction('CLEAR_ANDFILL_BB');
+export const _updateBB = createAction('UPDATEL_BB');
+export const setGender = createAction('SET_GENDER');
+export const _addRoom = createAction('ADD_ROOM');
 
 export const shuffleBB = () => (dispatch, getState) => {
-  dispatch(refillBB({ ...getState().user, usersInGroup: shuffle(getState().user.usersInGroup) }));
+  dispatch(overrideBB({ ...getState().user, usersInTab: shuffle(getState().user.usersInTab) }));
 }
 
-let busy = false, busyTimer;
+let shuffleInterval, updateInterval, timer, busy = false, busyTimer;
 
-let shuffleInterval, timer;
-document.addEventListener('mousemove', ()=>{
-  busy=true;
+document.addEventListener('mousemove', () => {
+  busy = true;
   busyTimer && clearTimeout(busyTimer);
-  busyTimer = setTimeout(()=>busy=false, (1000*15));
+  busyTimer = setTimeout(() => busy = false, (1000 * 15));
 })
 
-export const getBB = (groupIdx, gender = 'm') => async (dispatch, getState) => {
-  const disableBI = !!!groupIdx;
+const clearTimers = () => {
+  shuffleInterval && clearInterval(shuffleInterval);
+  timer && clearTimeout(timer);
+  updateInterval && clearInterval(updateInterval);
+}
 
-  if (!groupIdx && !Number.isInteger(groupIdx)) groupIdx = getState().user.selectedGroupIdx;
+const setTimers = (dispatch) => {
+  clearTimers();
+  timer = setTimeout(() => {
+    shuffleInterval = setInterval(() => !busy && dispatch(shuffleBB()), (1000 * 10));
+  }, (1000 * 20))
 
-  let timestamp = (Number.isInteger(groupIdx) && groupIdx > -1 && groupIdx !== getState().user.selectedGroupIdx) ? 0 : getState().user.timestamp;
+  updateInterval = setInterval(() => dispatch(updateBB()), (1000 * 15));
+}
 
-  if (groupIdx === 'clear') {
-    groupIdx = false;
-    timestamp = 0;
-  }
+export const updateBB = () => async (dispatch, getState) => {
+  const { timestamp, selectedTabIdx, gender } = getState().user;
+  const res = await api({
+    type: 'getBB',
+    data: {
+      tab: getState().user.tabs[selectedTabIdx],
+      rooms: getState().user.tabs.filter(room => room.type === 'room'),
+      gender,
+      timestamp,
+      type: 'update'
+    }
+  });
+  dispatch(_updateBB(res));
+}
+
+
+export const setBB = (tabIdx) => async (dispatch, getState) => {
+  clearTimers();
 
   const res = await api({
     type: 'getBB',
     data: {
-      timestamp,
-      selectedGroup: Number.isInteger(groupIdx) && groupIdx > -1 && getState().user.groups[groupIdx],
-      gender
-    },
-    disableBI
+      tab: tabIdx && getState().user.tabs[tabIdx],
+      rooms: getState().user.tabs.filter(room => room.type === 'room'),
+      gender: getState().user.gender,
+      type: 'set'
+    }
   });
+  dispatch(overrideBB(res));
+  setTimers(dispatch);
+}
 
-  dispatch(fillBB(res));
-
-  shuffleInterval && clearInterval(shuffleInterval);
-  timer && clearTimeout(timer);
-  timer = setTimeout(() => {
-    shuffleInterval = setInterval(() => !busy && dispatch(shuffleBB()), (1000 * 10));
-  }, (1000 * 20))
+export const addRoom = roomName => async (dispatch, getState) => {
+  let selectedTabIdx = false;
+  getState().user.tabs.forEach((tab, idx) => tab.label === roomName && (selectedTabIdx = idx));
+  if (!selectedTabIdx) {
+    selectedTabIdx = getState().user.tabs.length;
+    dispatch(_addRoom(roomName));
+  }
+  dispatch(setBB(selectedTabIdx));
 }

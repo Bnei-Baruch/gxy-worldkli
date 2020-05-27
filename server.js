@@ -13,6 +13,11 @@ const clearDB = require('./server/utils').clearDB;
 app.use(cors());
 app.use(morgan('dev'));
 
+app.use(function (req, res, next) {
+    console.log(req.originalUrl);
+    next();
+});
+
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 

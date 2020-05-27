@@ -25,7 +25,7 @@ class FriendImage extends Component {
           opacity: this.state.opacity,
           width: this.props.imageWidth,
           height: this.props.imageHeight,
-          backgroundImage: `url(${this.props.image.replace('.jpg', `${this.props.imageSufix}.jpg`)})`,
+          backgroundImage: `url(${this.props.image})`,
           backgroundSize: 'cover',
           backgroundColor: 'black',
           backgroundPosition: 'center',

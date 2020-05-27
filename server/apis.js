@@ -32,9 +32,9 @@ router.post('/userEnter', async (request, response) => {
         if (!groupName) throw { data: { msg: 'unfamiliar group detected' } };
 
         fs.writeFileSync(`./images/${body.userId}.jpg`, body.image.replace(/^data:image\/png;base64,/, ""), 'base64');
-        await resizeImage({ imgPath: `./images/${body.userId}.jpg`, sufix: '-s', width: 40 });
-        await resizeImage({ imgPath: `./images/${body.userId}.jpg`, sufix: '-m', width: 80 });
-        await resizeImage({ imgPath: `./images/${body.userId}.jpg`, sufix: '-l', width: 120 });
+        // await resizeImage({ imgPath: `./images/${body.userId}.jpg`, sufix: '-s', width: 40 });
+        // await resizeImage({ imgPath: `./images/${body.userId}.jpg`, sufix: '-m', width: 80 });
+        // await resizeImage({ imgPath: `./images/${body.userId}.jpg`, sufix: '-l', width: 120 });
 
         delete body.image;
 
@@ -96,7 +96,7 @@ router.post('/getRooms', async (request, response) => {
         });
 
         response.json({
-            rooms: Object.keys(_rooms).map(roomName => ({roomName, sum: _rooms[roomName]}))
+            rooms: Object.keys(_rooms).map(roomName => ({ roomName, sum: _rooms[roomName] }))
         });
 
     } catch (err) {
@@ -109,9 +109,9 @@ router.post('/getBB', async (request, response) => {
         const { body } = request;
         const gender = (body.gender || 'm').toUpperCase();
         let timestamp = body.timestamp || 0;
-        let { selectedGroup } = body;
+        let { tab, type } = body;
+        const roomTabs = body.rooms || [];
         const now = new Date().getTime();
-        let rooms = body.rooms || [];
 
         let wcGroups = [];
         // is WC
@@ -121,8 +121,8 @@ router.post('/getBB', async (request, response) => {
         if (_wcu && _wcu.length) wcGroups.push('World Kli');
         if (_wcuw && _wcuw.length) wcGroups.push('World Kli W');
 
-        if (!wcGroups.length) {
-            response.json({ groups: [], usersInGroup: [], selectedGroup: '', timestamp: now });
+        if ((gender === 'W' && !_wcuw.length) || (gender == 'M' && !_wcu.length)) {
+            response.json({ tabs: [], usersInTab: [], selectedTabIdx: -1, timestamp: now });
             return false;
         }
 
@@ -130,13 +130,28 @@ router.post('/getBB', async (request, response) => {
         const groups = wcGroups.concat(_groups).filter(g => gender == 'W' ? (g.indexOf(' W') > -1) : (g.indexOf(' W') === -1));
         console.log('groupsInDB', groups);
 
-        if (!selectedGroup) {
-            selectedGroup = groups[0];
-        }
-
+        let _tabs = groups.map(groupName => ({ type: 'group', label: groupName })).concat(roomTabs);
+        let _tab;
+        let _selectedTabIdx;
         let query = {};
 
-        switch (selectedGroup) {
+        if (!tab) {
+            _selectedTabIdx = 0;
+        } else {
+            let isTabIdx = -1;
+            _tabs.forEach((t, idx) => {
+                if (t.label == tab.label){
+                    isTabIdx = idx;
+                }
+            });
+            if (isTabIdx !== -1){
+                _selectedTabIdx = isTabIdx;
+            } else {
+                _selectedTabIdx = 0;
+            }
+        }
+
+        switch (_tabs[_selectedTabIdx].label) {
             case 'World Kli':
                 query = { wc: 'M' };
                 break;
@@ -144,22 +159,30 @@ router.post('/getBB', async (request, response) => {
                 query = { wc: 'W' };
                 break;
             default:
-                query = { groupName: selectedGroup };
+                if (_tabs[_selectedTabIdx].type === 'group'){
+                    query = { groupName: _tabs[_selectedTabIdx].label };
+                } else if (_tabs[_selectedTabIdx].type === 'room'){
+                    query = { roomName: _tabs[_selectedTabIdx].label };
+                }
         }
 
-        const _usersInGroup = await db.get({ collection: 'users', query: { ...query, updated: { $gt: timestamp } } });
+        if (type === 'update'){
+            query.updated = { $gt: timestamp };
+        }
 
-        const usersInGroup = _usersInGroup.map(u => ({ ...u._doc, image: `images/${u.userId}.jpg` }))
+        const _usersInTab = await db.get({ collection: 'users', query});
+
+        const usersInTab = _usersInTab.map(u => ({ ...u._doc, image: `images/${u.userId}.jpg` }));
+
         response.json({
-            timestamp: now,
-            selectedGroup: selectedGroup,
-            usersInGroup,
-            groups,
-            rooms
+            tabs: _tabs, 
+            usersInTab, 
+            selectedTabIdx: _selectedTabIdx, 
+            timestamp: new Date().getTime()
         });
 
     } catch (err) {
-        response.status(err.status).json(err.data || { msg: 'enter user error', err });
+        response.status(err.status).json(err.data || {data: {msg: 'enter user error', err }});
     }
 });
 module.exports = router;

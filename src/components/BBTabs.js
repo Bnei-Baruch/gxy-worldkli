@@ -8,7 +8,6 @@ import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
 import _w from 'utils/wrapActionCreators';
 import * as UserActions from 'actions/user';
-import * as RoomsActions from 'actions/rooms';
 import IconButton from '@material-ui/core/IconButton';
 import { withRouter } from 'react-router';
 import { Icon as Icn } from 'react-icons-kit'
@@ -75,16 +74,16 @@ class BBTabs extends React.Component {
         const innerWidth = Math.round(window['innerWidth']);
         const innerHeight = Math.round(window['innerHeight']) - 53;
 
-        if (this.props.user.usersInGroup.length === 0) return;
+        if (this.props.user.usersInTab.length === 0) return;
 
         const area = innerHeight * innerWidth;
-        const singleImageArea = area / this.props.user.usersInGroup.length;
+        const singleImageArea = area / this.props.user.usersInTab.length;
 
         const singleImageWidth = Math.sqrt(singleImageArea) * 1.2;
         const totalCols = Math.ceil(innerWidth / singleImageWidth);
         const imageWidth = innerWidth / totalCols;
 
-        const totalRows = Math.ceil(this.props.user.usersInGroup.length / totalCols);
+        const totalRows = Math.ceil(this.props.user.usersInTab.length / totalCols);
         const imageHeight = innerHeight / totalRows;
 
         let imageSufix = '';
@@ -105,18 +104,19 @@ class BBTabs extends React.Component {
     interval;
 
     componentDidMount() {
-        this.props.getBB(false, this.props.match.params.gender);
-        this.interval = setInterval(() => this.props.getBB(false, this.props.match.params.gender), (1000 * 60 * 5));
+        this.props.setGender(this.props.match.params.gender);
+        this.props.setBB();
         this.setImageSize();
         window.addEventListener('resize', () => this.setImageSize());
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.user.usersInGroup.length !== this.props.user.usersInGroup.length) {
+        if (prevProps.user.usersInTab.length !== this.props.user.usersInTab.length) {
             this.setImageSize();
         }
         if (prevProps.match.params.gender !== this.props.match.params.gender) {
-            this.props.getBB('clear', this.props.match.params.gender);
+            this.props.setGender(this.props.match.params.gender);
+            this.props.setBB();
         }
     }
 
@@ -125,8 +125,8 @@ class BBTabs extends React.Component {
         clearInterval(this.interval);
     }
 
-    handleChange = (event, value) => {
-        this.props.getBB(value, this.props.match.params.gender);
+    handleChange = (event, tabIdx) => {
+        this.props.setBB(tabIdx);
     };
 
     showUser = idx => {
@@ -152,7 +152,6 @@ class BBTabs extends React.Component {
         this.setState({ openGetRoomDialog: false });
         if (roomName){
             this.props.addRoom(roomName);
-            alert('under construction');
         }
     }
 
@@ -162,20 +161,20 @@ class BBTabs extends React.Component {
         return (
             <div className={classes.root}>
                 {
-                    (this.props.user.selectedGroupIdx > -1) ? <>
+                    (this.props.user.selectedTabIdx > -1) ? <>
                         <AppBar position="static" color="default">
                             <>
                                 <Tabs
                                     style={{ width: 'calc(100% - 96px)' }}
                                     classes={{ root: classes.tabsRoot, indicator: classes.indicator }}
-                                    value={this.props.user.selectedGroupIdx}
+                                    value={this.props.user.selectedTabIdx}
                                     onChange={this.handleChange}
                                     indicatorColor="primary"
                                     textColor="primary"
                                     variant="scrollable"
                                     scrollButtons="auto">
                                     {
-                                        this.props.user.groups.map((g, idx) => <Tab style={{ color: 'white' }} classes={{ root: classes.tabRoot, selected: classes.selected }} key={idx} label={g} />)
+                                        this.props.user.tabs.map((g, idx) => <Tab style={{ color: 'white' }} classes={{ root: classes.tabRoot, selected: classes.selected }} key={idx} label={g.label} />)
                                     }
                                 </Tabs>
                                 <div style={{ width: 96, height: 48, background: BLUE, position: 'absolute', top: 0, right: 0 }}>
@@ -200,7 +199,7 @@ class BBTabs extends React.Component {
                             onMouseLeave={() => this.showUser(null)}
                             style={{ position: 'relative', background: 'black', textAlign: 'center', fontSize: 0, height: 'calc(100vh - 48px)', overflowY: 'auto' }}>
                             {
-                                this.props.user.usersInGroup.map((u, idx) => <FriendImage
+                                this.props.user.usersInTab.map((u, idx) => <FriendImage
                                     loadTimer={idx * 10}
                                     key={idx}
                                     onMouseEnter={() => this.showUser(idx)}
@@ -214,7 +213,7 @@ class BBTabs extends React.Component {
                                 this.state.showUserIdx && <div style={{
                                     width: 300,
                                     height: 250,
-                                    backgroundImage: `url(${this.props.user.usersInGroup[this.state.showUserIdx].image})`,
+                                    backgroundImage: `url(${this.props.user.usersInTab[this.state.showUserIdx].image})`,
                                     backgroundSize: 'cover',
                                     backgroundColor: 'black',
                                     backgroundPosition: 'center',
@@ -226,7 +225,7 @@ class BBTabs extends React.Component {
                                     left: this.state.overlayLeft
                                 }}>
                                     <div style={{ fontSize: 18, padding: 5, background: BLUE, position: 'absolute', top: 0, right: 0, color: 'white', fontFamily: 'arial' }}>
-                                        {this.props.user.usersInGroup[this.state.showUserIdx].roomName}
+                                        {this.props.user.usersInTab[this.state.showUserIdx].roomName}
                                     </div>
                                     <div style={{
                                         background: 'rgba(0,0,0,0.5)',
@@ -237,7 +236,7 @@ class BBTabs extends React.Component {
                                         bottom: 0,
                                         padding: 3,
                                         fontSize: 14
-                                    }}>{this.props.user.usersInGroup[this.state.showUserIdx].userName}</div>
+                                    }}>{this.props.user.usersInTab[this.state.showUserIdx].userName}</div>
                                 </div>
                             }
                         </div>
@@ -257,4 +256,4 @@ BBTabs.propTypes = {
 
 export default withRouter(connect(state => ({
     user: state.user
-}), _w({...UserActions, ...RoomsActions}))(withStyles(styles)(BBTabs)));
+}), _w({...UserActions}))(withStyles(styles)(BBTabs)));
