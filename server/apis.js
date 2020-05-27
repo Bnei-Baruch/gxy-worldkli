@@ -167,7 +167,7 @@ router.post('/getBB', async (request, response) => {
         }
 
         if (type === 'update'){
-            query.updated = { $gt: timestamp };
+            query.created = { $gt: timestamp };
         }
 
         const _usersInTab = await db.get({ collection: 'users', query});
