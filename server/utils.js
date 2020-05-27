@@ -53,7 +53,7 @@ const genUuid = () => {
 const clearDB = async () => {
     try {
         const now = new Date().getTime();
-        const eraseTill = now - (1000 * 60 * 60 * 4); // 4 hours
+        const eraseTill = now - (1000 * 60 * 20); // 20 min
         const users = await db.get({ collection: 'users', query: { timestamp: { $lt: eraseTill } } });
         let filesToDelete = [];
         users.forEach(u => {filesToDelete = filesToDelete.concat([`${u.userId}-s.jpg`, `${u.userId}-m.jpg`, `${u.userId}-l.jpg`, `${u.userId}.jpg`])});

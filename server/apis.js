@@ -170,6 +170,8 @@ router.post('/getBB', async (request, response) => {
             query.created = { $gt: timestamp };
         }
 
+        query.status = true;
+
         const _usersInTab = await db.get({ collection: 'users', query});
 
         const usersInTab = _usersInTab.map(u => ({ ...u._doc, image: `images/${u.userId}.jpg` }));
