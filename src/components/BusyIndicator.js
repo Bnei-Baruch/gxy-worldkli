@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ClipLoader from 'react-spinners/ClipLoader';
-import { cwRed } from '../config/colors';
 
 
 class Header extends Component {
@@ -20,7 +19,7 @@ class Header extends Component {
     }
     return (
 
-      this.props.busyIndicator.step !== 0 && <div style={busyIndicatorS}>
+      ((this.props.busyIndicator.step !== 0) || !!this.props.busyIndicator.progress) && <div style={busyIndicatorS}>
         <ClipLoader
           sizeUnit={"px"}
           size={150}
@@ -28,7 +27,7 @@ class Header extends Component {
           loading={true}
         />
         {
-          !!this.props.busyIndicator.progress && <div style={{ position: 'absolute', fontSize: 40, textAlign: 'center', color: cwRed }}>
+          !!this.props.busyIndicator.progress && <div style={{ fontFamily: 'arial', position: 'absolute', fontSize: 28, opacity: 0.5, textAlign: 'center', color: 'white'}}>
             {this.props.busyIndicator.progress}
           </div>
         }
