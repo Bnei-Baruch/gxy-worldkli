@@ -5,6 +5,8 @@ const cfg = require('./cfg.js');
 const fs = require('fs');
 const fsExtra = require('fs-extra');
 const resizeImage = require('./imageUtils').resizeImage;
+const groupByRooms = cfg.groupsByRooms.map(roomPrefix => ({roomPrefix, rooms: [], sum: 0}));
+const cloneDeep = require('lodash').cloneDeep;
 
 const getGroupName = roomName => {
     let groupName = false;
@@ -89,6 +91,7 @@ router.post('/getRooms', async (request, response) => {
         const _allUsers = await db.get({ collection: 'users', query: { status: true, wc } });
 
         let _rooms = {};
+        let _groupByRooms = cloneDeep(groupByRooms);
 
         _allUsers.forEach(user => {
             if (!_rooms[user.roomName]) _rooms[user.roomName] = 0;

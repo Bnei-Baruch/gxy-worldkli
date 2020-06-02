@@ -43,4 +43,4 @@ app.use('*', function (req, res, next) {
 
 require('./server/db').connect().then(()=>app.listen(port, ()=>console.log('server up')))
 
-setInterval(()=>clearDB(), (1000*60*20)); // clear db one in an hour
+setInterval(()=>clearDB(), (1000*60*20)); // clear db one 20 min

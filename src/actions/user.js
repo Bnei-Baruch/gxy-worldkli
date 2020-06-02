@@ -1,6 +1,6 @@
 import { createAction } from 'redux-actions';
 import { api } from '../utils/data';
-import { shuffle } from '../utils/utils';
+// import { shuffle } from '../utils/utils';
 
 export const overrideBB = createAction('CLEAR_ANDFILL_BB');
 export const _updateBB = createAction('UPDATEL_BB');
@@ -8,7 +8,7 @@ export const setGender = createAction('SET_GENDER');
 export const _addRoom = createAction('ADD_ROOM');
 
 export const shuffleBB = () => (dispatch, getState) => {
-  dispatch(overrideBB({ ...getState().user, usersInTab: shuffle(getState().user.usersInTab) }));
+  //dispatch(overrideBB({ ...getState().user, usersInTab: shuffle(getState().user.usersInTab) }));
 }
 
 let shuffleInterval, updateInterval, timer, busy = false, busyTimer;

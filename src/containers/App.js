@@ -11,11 +11,20 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import BBTabs from 'components/BBTabs';
 import LoginPage from 'containers/LoginPage';
 import CallbackPage from 'containers/CallbackPage';
+import FloatingTitles from 'components/FloatingTitles';
 
 class App extends Component {
 
-  componentDidMount() {
+  state = {
+    showFloating: false
+  }
 
+  componentDidMount() {
+    document.onkeypress = e => {
+      if (e.code === 'KeyB') {
+        this.setState({showFloating: !this.state.showFloating});
+      }
+    }
   }
 
   routeAuthenticate = Component => {
@@ -37,6 +46,9 @@ class App extends Component {
         <MuiThemeProvider theme={theme}>
           <BusyIndicator />
           <NotificationDialog />
+          {
+            this.state.showFloating && <FloatingTitles />
+          }
           <Switch>
             <Route path="/callback" render={() => <CallbackPage />} />
             <Route exact path="/login" render={() => this.routeAuthenticate(LoginPage)} />

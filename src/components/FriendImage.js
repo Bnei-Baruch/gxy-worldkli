@@ -3,6 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import _w from 'utils/wrapActionCreators';
 import * as BIActions from 'actions/busyIndicator'
+
 const styles = () => ({
   root: {
     transition: 'opacity 4s',
@@ -15,13 +16,12 @@ class FriendImage extends Component {
 
   componentDidMount() {
     this.props.increaceBusyIndicatorTotalProgress();
-    window['zibi'] = !window['zibi'] ? 1 : window['zibi']+1;
     setTimeout(() => {
       var img = new Image();
       img.onload = () => {
         console.log(this.props.image)
         this.props.increaceBusyIndicatorProgress();
-        this.setState({display: true});
+        this.setState({ display: true });
         setTimeout(() => this.setState({ opacity: 1 }), 600);
       }
       img.src = this.props.image;
@@ -30,21 +30,21 @@ class FriendImage extends Component {
 
   render() {
     return (this.state.display && <div
-      onMouseEnter={this.props.onMouseEnter}
-      className={this.props.classes.root}
-      style={{
-        opacity: this.state.opacity,
-        width: this.props.imageWidth,
-        height: this.props.imageHeight,
-        backgroundImage: `url(${this.props.image})`,
-        backgroundSize: 'cover',
-        backgroundColor: 'black',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        display: 'inline-block',
-        position: 'relative'
-      }}>
-    </div>)
+        onMouseEnter={this.props.onMouseEnter}
+        className={this.props.classes.root}
+        style={{
+          opacity: this.state.opacity,
+          width: this.props.imageWidth,
+          height: this.props.imageHeight,
+          backgroundImage: `url(${this.props.image})`,
+          backgroundSize: 'cover',
+          backgroundColor: 'black',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          display: 'inline-block',
+          position: 'relative'
+        }}>
+      </div>)
   }
 }
 export default connect(state => ({

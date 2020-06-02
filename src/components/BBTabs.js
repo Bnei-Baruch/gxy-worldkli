@@ -200,6 +200,8 @@ class BBTabs extends React.Component {
                             style={{ position: 'relative', background: 'black', textAlign: 'center', fontSize: 0, height: 'calc(100vh - 48px)', overflowY: 'auto' }}>
                             {
                                 this.props.user.usersInTab.map((u, idx) => <FriendImage
+                                    userName={u.userName}
+                                    roomName={u.roomName}
                                     loadTimer={idx * 10}
                                     key={idx}
                                     onMouseEnter={() => this.showUser(idx)}
