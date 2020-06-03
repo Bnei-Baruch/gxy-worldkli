@@ -61,7 +61,7 @@ const clearDB = async () => {
         const approvedFilesToDelete = filesToDelete.filter(f => !!filesInDir.includes(f));
 
         for (const idx in approvedFilesToDelete) fs.unlinkSync(`./images/${approvedFilesToDelete[idx]}`);
-        await db.remove({collection: 'users', query: { timestamp: { $lt: eraseTill }}});
+        await db.remove({collection: 'users', query: { updated: { $lt: eraseTill }}});
         console.log(`clear db ${approvedFilesToDelete.length} files removed`);
         console.log(`clear db ${users.length} users removed`);
     } catch (err) {
