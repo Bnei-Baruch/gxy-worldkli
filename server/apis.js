@@ -56,6 +56,7 @@ router.post('/userEnter', async (request, response) => {
         console.log(`${body.userName} enter | ${body.userId}.jpg`)
         response.json();
     } catch (err) {
+        console.error('user enter error', err);
         response.status(err.status || 400).json(err.data || { msg: 'enter user error', err });
     }
 });
