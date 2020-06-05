@@ -56,7 +56,7 @@ const clearDB = async () => {
         const eraseTill = now - (1000 * 60 * 20); // 20 min
         const users = await db.get({ collection: 'users', query: { updated: { $lt: eraseTill } } });
         let filesToDelete = [];
-        users.forEach(u => {filesToDelete = filesToDelete.push(`${u.userId}.jpg`)});
+        users.forEach(u => {filesToDelete.push(`${u.userId}.jpg`)});
         const filesInDir = fs.readdirSync('./images/');
         const approvedFilesToDelete = filesToDelete.filter(f => !!filesInDir.includes(f));
 
