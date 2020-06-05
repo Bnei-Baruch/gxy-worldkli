@@ -17,6 +17,8 @@ import { plus } from 'react-icons-kit/fa/plus'
 import EmptyT from 'components/EmptyT';
 import FriendImage from 'components/FriendImage';
 import GetRoomDialog from 'components/GetRoomDialog';
+import Balloon from 'components/Balloon';
+import BBtnDialog from 'components/BBtnDialog';
 
 const BLUE = '#2e88c8';
 // const RED = 'red';
@@ -150,7 +152,7 @@ class BBTabs extends React.Component {
 
     addRoom = roomName => {
         this.setState({ openGetRoomDialog: false });
-        if (roomName){
+        if (roomName) {
             this.props.addRoom(roomName);
         }
     }
@@ -178,12 +180,15 @@ class BBTabs extends React.Component {
                                     }
                                 </Tabs>
                                 <div style={{ width: 96, height: 48, background: BLUE, position: 'absolute', top: 0, right: 0 }}>
-                                    <div style={{ width: 48, height: 48, display: 'inline-block' }}>
+                                    <div style={{ width: 48, height: 48, display: 'inline-block', position: 'relative' }}>
                                         <IconButton
                                             onClick={() => this.setState({ openGetRoomDialog: true })}
                                             style={{ color: 'white' }} className={classes.button} aria-label="Delete">
                                             <Icn style={{ position: 'relative', top: -5 }} size='60%' icon={plus} />
                                         </IconButton>
+                                        <Balloon id="group" style={{width: 200}}>
+                                            View a Group
+                                        </Balloon>
                                     </div>
                                     <div style={{ width: 48, height: 48, display: 'inline-block' }}>
                                         <IconButton
@@ -191,6 +196,9 @@ class BBTabs extends React.Component {
                                             style={{ color: 'white' }} className={classes.button} aria-label="Delete">
                                             <Icn style={{ position: 'relative', top: -3 }} size='120%' icon={this.props.match.params.gender === 'w' ? woman : man} />
                                         </IconButton>
+                                        <Balloon id="gender" style={{width: 200}}>
+                                            Men / Women
+                                        </Balloon>
                                     </div>
                                 </div>
                             </>
@@ -247,7 +255,8 @@ class BBTabs extends React.Component {
                 {
                     this.state.openGetRoomDialog && <GetRoomDialog close={roomName => this.addRoom(roomName)} onSelect={roomName => this.addRoom(roomName)} />
                 }
-            </div>
+                <BBtnDialog/>
+            </div >
         );
     }
 }
@@ -258,4 +267,4 @@ BBTabs.propTypes = {
 
 export default withRouter(connect(state => ({
     user: state.user
-}), _w({...UserActions}))(withStyles(styles)(BBTabs)));
+}), _w({ ...UserActions }))(withStyles(styles)(BBTabs)));

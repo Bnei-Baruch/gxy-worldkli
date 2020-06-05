@@ -18,7 +18,8 @@ const fTStyle = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    opacity: 0
+    opacity: 0,
+    textShadow: '0px 0px 12px #000'
   }
 }
 
