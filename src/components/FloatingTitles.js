@@ -11,7 +11,7 @@ const fTStyle = {
     color: 'white',
     fontFamily: 'arial',
     textAlign: 'center',
-    fontSize: 40,
+    fontSize: 45,
     transition: 'font-size 2s, opacity 2s',
     width: '80vw',
     height: '25vh',
@@ -19,7 +19,8 @@ const fTStyle = {
     justifyContent: 'center',
     alignItems: 'center',
     opacity: 0,
-    textShadow: '0px 0px 12px #000'
+    textShadow: '7px 6px 4px #000',
+    fontWeight: 'bold'
   }
 }
 
