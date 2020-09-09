@@ -39,7 +39,6 @@ class _FT extends Component {
     const { classes } = this.props;
     return <div className={classes.root} style={{ opacity: this.state.opacity, fontSize: this.state.fontSize, position: 'absolute', top: this.state.top, left: this.state.left, color: 'white' }}>
       <div>
-        <div>{this.props.name}</div>
         <div>{this.props.room}</div>
       </div>
     </div>
