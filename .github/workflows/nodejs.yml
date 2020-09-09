@@ -27,6 +27,6 @@ jobs:
     - run: npm install
     - run: npm run docker:build 
     - run: docker rm -f worldkli | true
-    - run: docker run -d -p 2200:2200 --network mongo --name worldkli gxy-worldkli
+    - run: docker run --restart=unless-stopped -d -p 2200:2200 --network mongo --name worldkli gxy-worldkli
 
 
