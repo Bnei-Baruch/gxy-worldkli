@@ -116,7 +116,7 @@ const distinct = async ({ collection, fieldName, query }) => {
 const connect = async () => {
     try {
         await mongoose.connect(connectionString, { useMongoClient: true });
-        await remove({collection: 'users', query: {}});
+        // await remove({collection: 'users', query: {}});
         if (!fs.existsSync('./images')) fs.mkdirSync('./images');
         console.log('mongo db connection [success]');
     } catch (err) {
