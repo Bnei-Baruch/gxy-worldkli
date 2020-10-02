@@ -11,7 +11,7 @@ const fTStyle = {
     color: 'white',
     fontFamily: 'arial',
     textAlign: 'center',
-    fontSize: 45,
+    fontSize: 67.5,
     transition: 'font-size 2s, opacity 2s',
     width: '80vw',
     height: '25vh',

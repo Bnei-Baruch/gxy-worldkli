@@ -22,14 +22,14 @@ const host = 'http://localhost:2200';
 const init = async ()=>{
     // const group=groups[0];
     for (const group of groups){
-        for (let i=1; i<5;i++){
+        for (let i=100; i<105;i++){
     
             const groupSufix = groupsSufix[Math.floor(Math.random() * groupsSufix.length)];
             const image = images[Math.floor(Math.random() * images.length)];
             const roomName = `${group.roomPrefix} ${groupSufix}`;
             const roomId = md5(roomName);
     
-            await api({
+            api({
                 url: host + '/api/userEnter',
                 method: 'post', 
                 data: {
@@ -42,9 +42,9 @@ const init = async ()=>{
             })
             console.log(`${i} success`);
     
-            await sleep(100)
             
         }
+        await sleep(10)
     }
 
 };
