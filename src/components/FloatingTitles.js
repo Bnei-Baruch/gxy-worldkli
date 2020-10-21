@@ -24,28 +24,63 @@ const fTStyle = {
   }
 }
 
-class _FT extends Component {
-  state = {
-    left: (rnd() % 100) - 40 + '%',
-    top: (rnd() % 100) - 25 + '%'
+const fTStyle1 = {
+  root: {
+    position: 'fixed',
+    color: 'white',
+    fontFamily: 'arial',
+    textAlign: 'center',
+    fontSize: 10,
+    transition: 'font-size 2s, opacity 1s',
+    // width: '80vw',
+    // height: '25vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 0,
+    // textShadow: '7px 6px 4px #000',
+    // fontWeight: 'bold',
+    background: '#2e88c8',
+    padding: '5px 25px',
+    whiteSpace: 'nowrap'
   }
+}
+
+let v = [0,0,0,0,0,0,0,0]
+const freeLength = v.length;
+
+class _FT extends Component {
+
+  state = {}
 
   componentDidMount() {
+
+    let vPos = rnd() % freeLength;
+    while(v[vPos]) vPos = rnd() % freeLength;
+
+    v[vPos] = true;
+
+    this.setState({
+      left: (rnd() % 100) - 10 + '%',
+      top: (freeLength*vPos) + 15 + '%'
+    })
+
     setTimeout(() => this.setState({ fontSize: 70, opacity: 1 }), 200);
     setTimeout(() => this.setState({ fontSize: 10, opacity: 0 }), 2700);
+    setTimeout(() => v[vPos] = false, 3200);
   }
 
   render() {
     const { classes } = this.props;
-    return <div className={classes.root} style={{ opacity: this.state.opacity, fontSize: this.state.fontSize, position: 'absolute', top: this.state.top, left: this.state.left, color: 'white' }}>
+    return this.state.left ? <div className={classes.root} style={{ opacity: this.state.opacity, fontSize: this.state.fontSize, position: 'absolute', top: this.state.top, left: this.state.left, color: 'white' }}>
       <div>
         <div>{this.props.room}</div>
       </div>
-    </div>
+    </div> : <></>
   }
 }
 
-const FT = withStyles(fTStyle)(_FT);
+const FT = withStyles(fTStyle1)(_FT);
 
 
 const floatingTitlesStyle = {
