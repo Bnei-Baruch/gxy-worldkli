@@ -5,24 +5,24 @@ import { connect } from 'react-redux';
 // import * as BIActions from 'actions/busyIndicator'
 import { rnd } from 'utils/utils';
 
-const fTStyle = {
-  root: {
-    position: 'absolute',
-    color: 'white',
-    fontFamily: 'arial',
-    textAlign: 'center',
-    fontSize: 67.5,
-    transition: 'font-size 2s, opacity 2s',
-    width: '80vw',
-    height: '25vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    opacity: 0,
-    textShadow: '7px 6px 4px #000',
-    fontWeight: 'bold'
-  }
-}
+// const fTStyle = {
+//   root: {
+//     position: 'absolute',
+//     color: 'white',
+//     fontFamily: 'arial',
+//     textAlign: 'center',
+//     fontSize: 67.5,
+//     transition: 'font-size 2s, opacity 2s',
+//     width: '80vw',
+//     height: '25vh',
+//     display: 'flex',
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     opacity: 0,
+//     textShadow: '7px 6px 4px #000',
+//     fontWeight: 'bold'
+//   }
+// }
 
 const fTStyle1 = {
   root: {
