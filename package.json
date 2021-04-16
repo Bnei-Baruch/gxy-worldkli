@@ -23,7 +23,7 @@
     "https": "^1.0.0",
     "jimp": "^0.10.3",
     "jsonwebtoken": "^8.1.0",
-    "jsrsasign": "^8.0.15",
+    "jsrsasign": "^10.2.0",
     "lodash": "^4.17.4",
     "material-ui-pickers": "^2.2.4",
     "md5": "^2.2.1",
