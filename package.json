@@ -35,7 +35,7 @@
     "mongoose-paginate": "^5.0.3",
     "morgan": "^1.9.0",
     "my-ip": "^1.1.1",
-    "node-sass": "^4.12.0",
+    "node-sass": "^7.0.0",
     "oidc-client": "^1.10.1",
     "prop-types": "^15.5.8",
     "react": "^16.9.0",
